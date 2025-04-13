@@ -1,0 +1,6 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Connection Manager]
+"SystemComponent"=dword:00000001
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Connection Manager]
+"SystemComponent"=dword:00000001

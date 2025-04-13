@@ -1,0 +1,145 @@
+//最后修改日期：2025.03.16
+
+ENVI 空变量=
+ENVI 已选=0
+ENVI 运行=0
+SET$ TAB=09
+CALL 主窗口
+EXIT
+
+_SUB 主窗口,W670H400,盘符管理,,,,,-ntab
+	ENVI @this.Font=:微软雅黑
+	LABE+ -trans ,L12T12W640H267
+	TABL -font:9:::::::::24 ,L13T13W638H25,+56:序号%TAB%+56:物理%TAB%+60:盘符%TAB%+80:文件系统%TAB%+100:卷标%TAB%+100:总大小%TAB%+70:分区表%TAB%+90:类型,,0x4000 
+	TABL -font:9:::::::::24 表格,L13T38W638H240,+56:%TAB%+56:%TAB%+60:%TAB%+80:%TAB%+100:%TAB%=100:%TAB%+70:%TAB%+90:,,0x16000 //0x2000 0x4000 0x10000
+	ITEM ,L117T303W100H40,刷新列表,CALL @~查询磁盘
+	ITEM ,L227T303W100H40,卸载盘符,CALL 卸载盘符
+	ITEM ,L337T303W100H40,分配盘符,CALL 分配盘符
+	ITEM ,L447T303W100H40,更改盘符,CALL 更改盘符
+	CALL @~查询磁盘
+	EXEC =!cmd.exe /c ver	//减少内存占用，很神奇
+_END
+
+_SUB 查询磁盘
+	IFEX $%已选%=1,EXIT!ENVI 已选=1
+	ENVI A=0
+	//TEAM ENVI @表格.Sel=?选中表格|ENVI @表格.Sel=%选中表格%;0 //刷新不选中
+	ENVI @表格.Val=-*
+	PART list disk ,所有磁盘
+	FORX* %所有磁盘%,循环磁序,
+	{
+		PART -iv=10 list disk %循环磁序%,分区表 //获取分区表
+		PART list part %循环磁序%,分区序号
+		SED 分区序号=0,[-\@][1-9][0-9]*[ ]*,,%分区序号% //过滤多余的分区号（五大）
+		FORX* %分区序号%,循环分序,
+		{
+			PART -phy# list part %循环磁序%:%循环分序%,分区信息
+			MSTR 分区序号,类型,初始大小,分区路径,物理序号,分区盘符=<1><2><5><7><8><9>%分区信息%
+			IFEX $%分区序号%=0,EXIT -
+			CALC 分区总大=%初始大小%/1G##2
+			IFEX $%分区总大%G<1G,TEAM CALC 分区总大=%初始大小%/1M##2|ENVI 分区总大=%分区总大%M!ENVI 分区总大=%分区总大%G //计算分区总大小
+			CALL 查询分区 "%分区路径%" "%分区盘符%" "%循环磁序%" "%循环分序%"
+			CALL 查询类型 %类型%
+			CALC A=%A%+1
+			ENVI @表格.Val=%A%;%循环磁序%:%分区序号%%TAB%%物理序号%%TAB%%分区盘符%%TAB%%文件系统%%TAB%%卷标%%TAB%%分区总大%%TAB%%分区表%%TAB%%分区类型%
+		}
+	}
+	ENVI 已选=0
+_END
+
+_SUB 查询分区 //获取方法来自 PECMD分区管理
+	TEAM ENVI 传分区路径=%1|ENVI 传分区盘符=%2|ENVI 传磁序序号=%3|ENVI 传分区序号=%4
+	TEAM ENVI 传分区路径=%传分区路径:~1,-1%|ENVI 传分区盘符=%传分区盘符:~1,-1%|ENVI 传磁序序号=%传磁序序号:~1,-1%|ENVI 传分区序号=%传分区序号:~1,-1%
+	TEAM ENVI 卷标=|ENVI 文件系统=
+	FDRV *vol 卷标,文件系统=\\?\Volume{%传分区路径%}
+	IFEX [|%卷标%=%空变量% & |%文件系统%=%空变量%],FDRV *vol 卷标,文件系统=%传分区盘符%
+	IFEX [|%卷标%=%空变量% & |%文件系统%=%空变量%],
+	{
+		FDRV *idle *rsort 空闲盘符=*:
+		MSTR 空闲盘符=<1>%空闲盘符%
+		IFEX |%空闲盘符%=%空变量%,EXIT
+		SHOW & %传磁序序号%:%传分区序号%,%空闲盘符%
+		FDRV *vol 卷标,文件系统=%空闲盘符%
+		SUBJ &- %空闲盘符%
+		IFEX %空闲盘符%, SUBJ *- %空闲盘符%
+	}
+_END
+
+_SUB 查询类型
+	TEAM ENVI 传类型=%1|ENVI 分区类型=
+	IFEX |%传类型%=C12A7328-F81F-11D2-BA4B-00A0C93EC93B,ENVI 分区类型=ESP
+	IFEX |%传类型%=E3C9E316-0B5C-4DB8-817D-F92DF00215AE,ENVI 分区类型=MSR
+	IFEX |%传类型%=DE94BBA4-06D1-4D40-A16A-BFD50179D6AC,ENVI 分区类型=WinRE
+	IFEX |%传类型%=0FC63DAF-8483-4772-8E79-3D69D8477DE4,ENVI 分区类型=Linux DATA
+	IFEX |%传类型%=A19D880F-05FC-4D3B-A006-743F0F84911E,ENVI 分区类型=Linux RAID
+	IFEX |%传类型%=0657FD6D-A4AB-43C4-84E5-0933C84B4F4F,ENVI 分区类型=Linux SWAP
+_END
+
+_SUB 卸载盘符
+	ENVI @表格.Sel=?选中表格
+	IFEX $%选中表格%=0,TEAM MESS=+icon5 未选择分区@ 提示|EXIT
+	ENVI @表格.Val=?%选中表格%.3;表格盘符
+	IFEX [|%表格盘符%=%空变量% |%表格盘符%=%SystemDrive%],EXIT //查询有没有盘符，没有就结束。选中系统盘也结束
+	IFEX $%运行%=1,EXIT!ENVI 运行=1
+	ENVI @表格.Val=?%选中表格%.1;磁盘分区号
+	TEAM ENVI 选中磁序=%磁盘分区号:~0,1%|ENVI 选中分序=%磁盘分区号:~2%
+	SHOW - %选中磁序%:%选中分序%
+	ENVI 运行=0
+	CALL @~查询磁盘
+_END
+
+_SUB 分配盘符
+	ENVI @表格.Sel=?选中表格
+	IFEX $%选中表格%=0,TEAM MESS=+icon5 未选择分区@ 提示|EXIT
+	ENVI @表格.Val=?%选中表格%.3;表格盘符
+	IFEX |%表格盘符%=%空变量%,!EXIT //查询有没有盘符，有就结束
+	TEAM FDRV *idlec 空闲盘符=*:|MSTR 空闲盘符=<1>%空闲盘符% //先排除AB盘
+	IFEX |%空闲盘符%=%空变量%,TEAM FDRV *idle 空闲盘符=*:|MSTR 空闲盘符=<1>%空闲盘符% //前面获取不到再来一次，这次包括AB盘
+	IFEX |%空闲盘符%=%空变量%,TEAM MESS=+icon5 没有空闲的盘符可分配@ 提示|EXIT
+	IFEX $%运行%=1,EXIT!ENVI 运行=1
+	ENVI @表格.Val=?%选中表格%.1;磁盘分区号
+	TEAM ENVI 选中磁序=%磁盘分区号:~0,1%|ENVI 选中分序=%磁盘分区号:~2%
+	SHOW %选中磁序%:%选中分序%,%空闲盘符%
+	ENVI 运行=0
+	CALL @~查询磁盘
+_END
+
+_SUB 更改盘符
+	ENVI @表格.Sel=?选中表格
+	IFEX $%选中表格%=0,TEAM MESS=+icon5 未选择分区@ 提示|EXIT
+	ENVI @表格.Val=?%选中表格%.3;表格盘符
+	IFEX |%表格盘符%=%SystemDrive%,TEAM MESS=+icon5 系统盘不可更改@ 提示|EXIT
+	IFEX $%运行%=1,EXIT!ENVI 运行=1
+	CALL 更改盘符窗口
+	ENVI 运行=0
+_END
+
+_SUB 更改盘符窗口,W300H200,更改或分配新的盘符,,,,,-disminb -ntab
+	ENVI @this.Font=10:微软雅黑
+	ENVI @表格.Val=?%选中表格%.1;磁盘分区号
+	ENVI @表格.Val=?%选中表格%.3;表格盘符
+	LABE ,L14T10W265H20,为 %磁盘分区号% %表格盘符% 更改或分配新的盘符。
+	LABE ,L14T44W100H20,分配以下盘符：
+	FDRV *idle 空闲盘符=
+	LIST 盘符列表,L220T40W60H60,%空闲盘符%
+	ITEM ,L150T125W62H30,确定,CALL 确定
+	ITEM ,L219T125W62H30,取消,KILL @更改盘符窗口
+	ENVI B=1
+	FORX*L 1 1 2,A,
+	{
+		ENVI @盘符列表.QUERY=%A%;查询盘符
+		IFEX [|%查询盘符%=A: |%查询盘符%=B:],CALC B=%B%+1
+	}
+	ENVI @盘符列表.QUERY=%B%;查询盘符
+	IFEX |%查询盘符%=%空变量%,ENVI @盘符列表.isel=1!ENVI @盘符列表.isel=%B%
+_END
+
+_SUB 确定
+	ENVI @表格.Val=?%选中表格%.1;磁盘分区号
+	TEAM ENVI 选中磁序=%磁盘分区号:~0,1%|ENVI 选中分序=%磁盘分区号:~2%
+	ENVI @表格.Val=?%选中表格%.3;表格盘符
+	IFEX |%表格盘符%<>%空变量%,SHOW - %选中磁序%:%选中分序%
+	SHOW %选中磁序%:%选中分序%,%盘符列表%
+	CALL 查询磁盘
+	KILL @更改盘符窗口
+_END

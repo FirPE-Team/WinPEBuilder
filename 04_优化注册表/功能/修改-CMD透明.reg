@@ -1,0 +1,14 @@
+ Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Console]
+"ForceV2"=dword:00000001
+"InsertMode"=dword:00000001
+"LineSelection"=dword:00000001
+"LoadConIme"=dword:00000000
+"QuickEdit"=dword:00000001
+"FilterOnPaste"=dword:00000001
+"ScreenBufferSize"=dword:012c0050
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Console\%SystemRoot%_System32_cmd.exe]
+"WindowAlpha"=dword:000000d8
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Console\%SystemRoot%_SysWOW64_cmd.exe]
+"WindowAlpha"=dword:000000d8

@@ -1,0 +1,9 @@
+Windows Registry Editor Version 5.00
+
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Drive\shell\change-passphrase]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Drive\shell\change-pin]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Drive\shell\encrypt-bde]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Drive\shell\encrypt-bde-elev]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Drive\shell\manage-bde]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Drive\shell\resume-bde]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Drive\shell\resume-bde-elev]

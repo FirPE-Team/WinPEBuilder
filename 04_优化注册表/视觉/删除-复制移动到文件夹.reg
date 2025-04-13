@@ -1,0 +1,9 @@
+Windows Registry Editor Version 5.00
+
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\shell\Windows.CopyToMenu]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\shell\Windows.MoveToMenu]
+
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\AllFileSystemObjects\ShellEx\ContextMenuHandlers\{C2FBB630-2971-11D1-A18C-00C04FD75D13}]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\AllFileSystemObjects\ShellEx\ContextMenuHandlers\{C2FBB631-2971-11D1-A18C-00C04FD75D13}]
+
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\AllFileSystemObjects\ShellEx\ContextMenuHandlers\SendTo]

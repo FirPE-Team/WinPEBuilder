@@ -1,0 +1,109 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.7z]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.7z\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.7z\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.arj]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.arj\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.arj\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.bz2]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.bz2\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.bz2\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.bzip2]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.bzip2\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.bzip2\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.cab]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.cab\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.cab\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.cpio]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.cpio\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.cpio\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.gz]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.gz\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.gz\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.gzip]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.gzip\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.gzip\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.lzh]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.lzh\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.lzh\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.lzma]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.lzma\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.lzma\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.rar]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.rar\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.rar\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.rpm]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.rpm\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.rpm\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.tar]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.tar\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.tar\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.taz]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.taz\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.taz\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.tbz]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.tbz\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.tbz\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.tbz2]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.tbz2\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.tbz2\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.vhd]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.vhd\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.vhd\PersistentHandler]
+
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.zip]
+"Content Type"=-
+"PerceivedType"=-
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.zip\OpenWithProgids]
+[-HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\.zip\PersistentHandler]

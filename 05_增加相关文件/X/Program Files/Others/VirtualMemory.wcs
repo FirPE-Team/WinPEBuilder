@@ -1,0 +1,261 @@
+// 无忧论坛527104427
+
+WIN1 %*
+
+_SUB WIN1,W510H280,虚拟内存与临时文件设置,SET bt=,
+	TEAM ENVI^ ForceLocal=1|ENVI^ EnviMode=1  //强制所有变量为PE变量。标准模式，空变量解释为空。
+	TEAM SET-env &TEMP=%TEMP%|SET-env &TMP=%TMP%|SET-def DrvVolDat=|SET-def ALlDrv=|SET-def ALlDrv2=|SET-def FixM=|SET$ &NL=0d 0a|SET$ &TAB=09
+	FDRV &&ALlDrv1=*:  //所有分区
+	forx * %ALlDrv1%,&&drv1,
+	{
+		FORM -raw &&V=%drv1%  //介质类型
+		FIND $%V%=DRIVE_FIXED,SET ALlDrv=%ALlDrv% %drv1% !EXIT   //只有硬盘
+		FIND $X=X%ALlDrv2%,SET ALlDrv2=%drv1%!SET ALlDrv2=%ALlDrv2%|%drv1%
+	}
+	REGI *$HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PagingFiles,&&PAGES  //页面文件
+	forx * %ALlDrv%,&&drv1,
+	{*
+		FDRV *vol &&vol1=%drv1%  //卷标
+		FIND %drv1%\=?,&&C1  //总空间
+		IFEX %drv1%\=?,&&C2  //可用空间
+		CALC #C1 = %C1%/1024/1024
+		CALC #C2 = %C2%/1024/1024
+		FIND $%DrvVolDat%=,!SET DrvVolDat=%DrvVolDat%%NL%
+		@ TEAM SET-def Ini=|SET-def Max=|SET-def FixM=
+		FORX *NL &PAGES,&&DRVK,
+		{
+			LSTR &&C=2,%DRVK%
+			FIND $%C%=%drv1%,
+			{
+				MSTR Ini,Max=<-2><-1>%DRVK%
+				CALC #&&tmpMax = %Max%/1
+				FIND $%&tmpMax% = %Max%,!EXIT
+				IFEX $%&tmpMax% < 0,EXIT
+				SET FixM=%Max%
+				CALC #&&tmpIni = %Ini%/1
+				FIND $%&tmpIni% = %Ini%,!EXIT
+				IFEX $%&tmpIni% < 0,EXIT
+				SET FixM=%Ini%/%Max%
+			}
+		}
+		SET DrvVolDat=%DrvVolDat%%drv1%%TAB%%vol1%%TAB%%FixM%%TAB%%C1%%TAB%%C2%
+	}
+
+	SET-def bt=1
+	@ TEAM SET-def ok1=1|SET-def ok2=1|SET-def ok3=1|SET-def ok4=1  //4个标志位
+	ITEM ITEM7,L445T217W45H25,确定,CALL SetPE %*,
+	SET &TITLE=+40:盘符%TAB%=100:卷标%TAB%=150:虚拟内存最小/最大值(MB)%TAB%=82:总空间(MB)%TAB%=82:可用空间(MB)
+	TABL TABL2,L15T20W475H150,%TITLE%,%DrvVolDat%,0x10040
+
+	SET &::WM_LBUTTONDOWN=0x0201
+	ENVI @TABL2.MSG=_%&::WM_LBUTTONDOWN%:CALL OnTable
+	ENVI @TABL2.Val=?1.1;&&V1
+	ENVI TMPDir=
+
+	LABE -vcenter LABE2,L15T185W80H23,虚拟内存位置:,,
+	LIST ListDrv,L95T186W60H143,不设置|%ALlDrv2%,CALL OnTimer1,不设置,  //CALL OnListDrv
+	LABE -vcenter LABE3,L178T185W65H23,最小值(MB):,,
+	LIST LISTInit,L248T187W74H130,64|128|256|512|1024|2048|3072|4096|5120|6144|7168|8192,CALL OnTimer1,2048,0x4  //CALL OnLISTInit
+	LABE -center -vcenter LABE4,L345T187W70H21,最大值(MB):,,
+	LIST LISTMax,L416T187W74H130,64|128|256|512|1024|2048|3072|4096|5120|6144|7168|8192,CALL OnTimer1,2048,0x4  //CALL OnLISTMax
+
+	LABE -center -vcenter LABE5,L15T220W80H21,临时文件位置:,,
+	SET-def TMPDir_Enable=1
+	EDIT -3D TMPDir,L95T219W280H23,%TMPDir%,,0x100
+	ITEM BUTDIR,L380T220W40H20,...,CALl SearchDir,
+
+	SET &WM_COMMAND=0x0111
+	SET &EN_CHANGE=0x0300
+	ENVI @TMPDir.ID=?;&&TMPDir_ID
+	CALC -base=16 #&&TMPDir_CHANGE=%&EN_CHANGE% * 0x10000  + %TMPDir_ID%   //低16位，控件ID   //高16位,操作码
+	ENVI @this.MSG=_%&WM_COMMAND%::&&wp,&&lp,CALL OnCommand   //捕捉内容改变
+	CALL OnTimer1
+_END
+
+_SUB OnCommand
+	FIND $1=%bt%,!EXIT
+	IFEX $%TMPDir_CHANGE%=%&wp%,CALL OnTMPDir
+_END
+
+_SUB EnableItem7
+	FIND $1111=%ok1%%ok2%%ok3%%ok4%,SET-def ok=1!SET-def ok=0
+	FIND $%ok%=%TMPDir_Enable%,!TEAM SET TMPDir_Enable=%ok%|ENVI @ITEM7.Enable=%ok%
+_END
+
+_SUB OnTMPDir   //监控 TMPDir
+	//筛选临时目录，除了存在的硬盘，其他都不符合条件
+	SET ok1=1
+	@FIND $""="%TMPDir%",!
+	{
+		MSTR &&TDir=2,1,%TMPDir%
+		FIND $":"="%&TDir%",
+		{
+			FORM -raw &&TDir=%TMPDir%
+			FIND $%&TDir%=DRIVE_FIXED,!TEAM SET ok1=0|EXIT
+		}!SET ok1=0
+	}
+	CALL EnableItem7
+_END
+
+_SUB OnListDrv    //监控 ListDrv
+	SET ok2=1
+	FIND $"%ListDrv%"="不设置",!
+	{
+		IFEX %ListDrv%\=?,&&LDrv
+		CALC #&&LDrv = %&LDrv%/1024/1024
+		IFEX $%&LDrv% < %LISTInit%,set ok2=0
+		IFEX $%&LDrv% < %LISTMax%,set ok2=0
+	}
+
+	IFEX $%LISTMax% < %LISTInit%,set ok2=0
+	CALL EnableItem7
+_END
+
+_SUB OnLISTInit    //监控 LISTInit
+	//判断输入是否为整数
+	//IFEX X.LOG, EXEC %MyName% MESS  LISTInit=[%LISTInit%]  @调试 *8000
+	SET ok3=1
+	CALC #&&LDrv = %LISTInit%/1
+	FIND $%LISTInit% = %&LDrv%,!SET ok3=0
+	IFEX $%&LDrv% < 0,set ok3=0
+	CALL EnableItem7
+_END
+
+_SUB OnLISTMax    //监控 LISTMax
+	//判断输入是否为整数
+	SET ok4=1
+	CALC #&&LDrv = %LISTMax%/1
+	FIND $%LISTMax% = %&LDrv%,!SET ok4=0
+	IFEX $%&LDrv% < 0,set ok4=0
+	CALL EnableItem7
+_END
+
+_SUB OnTimer1
+	OnTMPDir
+	OnLISTInit
+	OnLISTMax
+	OnListDrv
+_END
+
+_SUB SearchDir
+	ENVI &&DIR0=%TMPDir%
+	BROW &&DIR0,*%TMPDir%,请选择一个目录
+	FIND $""="%&DIR0%",!
+	{
+		MSTR &&DIR1=-1,1,%&DIR0%
+		FIND $"\"="%&DIR1%",ENVI @TMPDir=%&DIR0%Temp!ENVI @TMPDir=%&DIR0%\Temp
+	}
+	CALL OnTimer1
+_END
+
+_SUB DelPage  //重启删除页面文件
+	MSTR PAGE2,PAGE3=<-2><-1>%PAGE0%
+	SED PAGE0=0, %PAGE2% %PAGE3%,,%PAGE0%
+	CALL $Kernel32.dll,MoveFileExW,%PAGE0%,#0,#4
+	ENVI PAGE0=
+_END
+
+_SUB SetPage  //设置页面文件
+	REGI *$HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PagingFiles,&&PAGES
+
+	//曾设置过页面文件
+	FORX *NL &PAGES,PAGE0,
+	{
+		LSTR &&C=2,%PAGE0%
+		FIND $%&C%=%ListDrv%,
+		{
+			ENVI PAGE1=1
+			FIND $%LISTInit%=0,FIND $%LISTMax%=0,TEAM CALL DelPage|EXIT   //当最大值和最小值同时为0时，清除页面文件
+			ENVI PAGE0=%ListDrv%\pagefile.sys %LISTInit% %LISTMax%
+			//SED PAGE0=0,\\,$,%PAGE0%
+			//SED PAGE0=0,%PAGE0%,%ListDrv%\\pagefile.sys %LISTInit% %LISTMax%,%PAGE0%
+		}
+		FIND $"%PAGE0%"="",EXIT
+		FIND $"%PAGEN%"="",ENVI PAGEN=%PAGE0%!ENVI PAGEN=%PAGEN%%NL%%PAGE0%
+	}
+
+	//未曾设置页面文件
+	FIND $"%PAGES%"="",
+	{
+		FIND $%LISTInit%=0,FIND $%LISTMax%=0,TEAM ENVI PAGEN=|EXIT
+		ENVI PAGEN=%ListDrv%\pagefile.sys %LISTInit% %LISTMax%
+	}!
+	{
+		//曾设置过页面文件，再设置一个到其他盘
+		FIND $"%PAGE1%"="1",EXIT
+		FIND $%LISTInit%=0,FIND $%LISTMax%=0,EXIT
+		ENVI PAGEN=%PAGEN%%NL%%ListDrv%\pagefile.sys %LISTInit% %LISTMax%
+	}
+
+	PAGE *force %ListDrv%\pagefile.sys %LISTInit% %LISTMax%
+
+	//写回注册表 //不用了， PAGE 命令字节管理注册表
+	REGI *$HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PagingFiles=%PAGEN%
+
+_END
+
+_SUB SetPE
+	TEAM ENVI PAGE1=|ENVI PAGEN=|SET-def bt=|KILL \
+	FIND $"%ListDrv%"="不设置",FIND $""="%TMPDir%",EXIT
+	TIPS 正在设置,请稍等……,50000,4,SHELL32.DLL#164
+	FIND $"%ListDrv%"="不设置",!CALL SetPage
+
+	//转移临时文件
+	FIND $""="%TMPDir%",!
+	{
+		FILE --force %TEMP%\*
+		FDIR --fullfile TMPDir=%TMPDir%  //去掉多余的反斜杠，并将不合法的路径合法化，如：“C:ABCD\\D”
+		MSTR S=-1,1,%TMPDir%
+		FIND $"\"="%S%",MSTR TMPDir=-2,0,%TMPDir%  //去掉最后一个反斜杠“\”
+		TEAM PATH|WAIT 200
+		MDIR %TMPDir%\TEMP
+		`TEAM SET-env temp=%TMPDir%\TEMP|SET-env tmp=%TMPDir%\TEMP
+		TEAM ENVI $temp=%TMPDir%\TEMP|ENVI $tmp=%TMPDir%\TEMP
+		REGI HKCU\Environment\TEMP=%TMPDir%\TEMP
+		REGI HKCU\Environment\TMP=%TMPDir%\TEMP
+		REGI HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\TEMP=%TMPDir%\TEMP
+		REGI HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\TMP=%TMPDir%\TEMP
+		REGI HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders\Cookies=%TMPDir%\Cookies
+		REGI HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders\Cache=%TMPDir%\Temporary Internet Files
+		REGI HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\5.0\Cache\Content\CacheLimit=#0x0004b000
+		REGI HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Cache\Content\CacheLimit=#0x0004b000
+		REGI HKLM\SOFTWARE\WimTool\AutoMountPath=%TMPDir%\MountPath
+		REGI HKLM\SOFTWARE\WimTool\WimTemp=%TMPDir%
+		`FIND explorer.exe,TEAM KILL explorer.exe|EXEC explorer.exe
+	}
+	TEAM ENVI @@DeskTopFresh=1   //刷新
+	TIPS 完成设置,正在退出……,50000,4,SHELL32.DLL#164
+	FIND $"%1"="/S",TEAM KILL \|EXIT _SUB
+	FIND $"%PAGE1%"="1",CALL MyMess  提示 \n设置已经改变，\n\n是否重启生效？!CALL MyMess  提示 \n\n设置完成！
+	KILL \
+_END
+
+_SUB MyMess,W170H130,%~1,
+	IMAG IMAG2,L5T6W48H43,shell32.dll#120,
+	MSTR &&PAGE4=<2*>%*
+	LABE ,L63T6W100H50,%PAGE4%
+	FIND $"%PAGE1%"="1",
+	{
+		ITEM ,L95T65W50H25,取消,KILL \,
+		ITEM ,L20T65W50H25,确定,TEAM KILL \|SHUT -force R,
+	}!
+	{
+		ITEM ,L38T65W90H25,确定,TEAM KILL \|
+	}
+	ENVI T0=5
+	TIME t1,1000,call TimeOut %~1
+	call TimeOut %~1
+_END
+
+_SUB TimeOut
+	ENVI @this=%~1 %T0%
+	CALC T0=%T0% - 1
+	IFEX $%T0%<0,@ TEAM ENVI @t1=0|KILL \
+_END
+
+_SUB OnTable
+	ENVI @TABL2.Sel=?&&Sel
+	IFEX $1>%&Sel%,EXIT
+	ENVI @TABL2.Val=?%Sel%.1;&&V1
+	ENVI @ListDrv=%V1%
+_END
