@@ -1,4 +1,3 @@
-@echo off
 if "x%~1"=="x" goto :EOF
 set "project_path=%~1"
 
