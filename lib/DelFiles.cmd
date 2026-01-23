@@ -61,6 +61,7 @@ set "fn=%~1"
 if not "%fn:~0,1%"=="\" set "fn=%g_path%%fn%"
 if not exist "%X%\%fn%" goto :EOF
 
+echo Delete: "%X%\%fn%"
 dir/ad "%X%\%fn%" >nul 2>nul && (
   rem delete dir
   rd /s /q "%X%\%fn%"
