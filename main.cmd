@@ -20,10 +20,7 @@ reg add "HKLM\Tmp_SOFTWARE\Policies\Microsoft\Windows NT\systemrestore" /v Disab
 echo 删除应答文件
 del /f /a /q "%X%\Windows\System32\unattend.xml"
 
-echo 删除资源管理器功能区
-call DelFiles "\windows\system32\UIRibbonRes.dll,UIRibbon.dll"
-rem 替换 \Windows\resources\Themes\aero\Shell\NormalColor\shellstyle.dll
-reg add "HKLM\Tmp_DEFAULT\Software\Policies\Microsoft\Windows\Explorer" /v "ExplorerRibbonStartsMinimized" /t REG_DWORD /d "1" /f
-
-echo 删除 开始菜单 - 系统工具 目录
+echo 删除开始菜单"系统工具"目录
 rd /s /q "%X%\Users\Default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\System Tools"
+echo 删除开始菜单"Windows 工具"目录
+rd /s /q "%X%\ProgramData\Microsoft\Windows\Start Menu\Programs\Administrative Tools"

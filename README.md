@@ -10,7 +10,7 @@ FirPE 项目
 
 使用 boot.wim 卷 2 进行构建，WinRE 可能会黑屏
 
-## WinPE 着重测试功能
+## WinPE 测试
 
 ### 注意事项
 
@@ -20,13 +20,11 @@ Hook 钩子脚本需要 CR+LF 换行，否则 CMD 会执行出错。
 
 1. MTP、Rndis 功能
 2. 网络共享
-3. PPPOE 宽带拨号
-4. mtsc 远程桌面
+3. mtsc 远程桌面
 
 ### 维护版
 
 1. 引导修复工具
-2. 7-Data 是否为中文
 
 ## WinPE 排错指南
 
@@ -38,12 +36,6 @@ Hook 钩子脚本需要 CR+LF 换行，否则 CMD 会执行出错。
 [HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Policies\Google\Chrome]
 "AudioSandboxEnabled"=dword:00000000
 ```
-
-### PPPOE 失败
-
-rasman 服务启动失败
-
-补充 prxyqry.dll、sstpsvc.dll（包括 sstpsvc.dll.mui）
 
 ### 脚本排查指南
 
@@ -125,7 +117,7 @@ rasman 服务启动失败
 2. 将判断 `\Edgeless\version.txt` 改为判断 `\FirPE`
 3. aria2c 调用时加入 `--check-certificate=false`
 
-## Win03PE
+## Windows 2003 PE
 
 温馨提醒：PECMD.ini 配置文件不用优化，不知道什么原因优化之后会影响智能 ABC 输入法卡系统
 

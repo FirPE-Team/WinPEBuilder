@@ -18,12 +18,14 @@ if exist "X:\Users\usbdrive.txt" (
 
 for %%u in (Z Y X W V U T S R Q P O N M L K J I H G F E D C) do (
   if exist "%%u:\FirPE\" (
-    call :log WinPE初始化 使用%%u:\作为WinPE自定义目录
-    set "USBDrive=%%u:\FirPE"
-    set "ConfigPath=%%u:\FirPE\config.ini"
-    set "CustomHooks=%%u:\FirPE\Hooks"
-    echo %%u>"X:\Users\usbdrive.txt"
-    goto :eof
+    for /f "delims=" %%a in ('dir /b /a "%%u:\FirPE\" 2^>nul') do (
+      call :log WinPE初始化 使用%%u:\作为WinPE自定义目录
+      set "USBDrive=%%u:\FirPE"
+      set "ConfigPath=%%u:\FirPE\config.ini"
+      set "CustomHooks=%%u:\FirPE\Hooks"
+      echo %%u>"X:\Users\usbdrive.txt"
+      goto :eof
+    )
   )
 )
 goto :eof
@@ -41,6 +43,10 @@ rem 参数3：配置项
 rem 参数4：默认值
 rem 返回值：value
 
+if not exist "%~1" (
+  set value=%~4
+  goto :eof
+)
 set file=%~1
 set area=[%~2]
 set key=%~3

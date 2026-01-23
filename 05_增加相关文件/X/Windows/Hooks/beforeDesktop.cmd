@@ -3,9 +3,7 @@ rem WindowsPE进入桌面之前
 @echo off
 setlocal enabledelayedexpansion
 set "PATH=%~dp0;%PATH%"
-
 call common setWinPEDrive
-if defined CustomHooks if exist "%CustomHooks%\%~nx0" call %CustomHooks%\%~nx0
 
 dir /a /b "%USBDrive%\Default"|findstr .>nul 2>nul &&(
   rem 应用系统图标资源包（ess）
@@ -100,11 +98,11 @@ if exist "!ConfigPath!" (
 
     md %USBDrive%\Users\Music
     rd /s /q %USERPROFILE%\Music
-    mklink /D %USERPROFILE%\Pictures %USBDrive%\Users\Music
+    mklink /D %USERPROFILE%\Music %USBDrive%\Users\Music
 
     md %USBDrive%\Users\Videos
     rd /s /q %USERPROFILE%\Videos
-    mklink /D %USERPROFILE%\Pictures %USBDrive%\Users\Videos
+    mklink /D %USERPROFILE%\Videos %USBDrive%\Users\Videos
   )
   
   call common readini !ConfigPath! "系统" "禁用提高指针精确度"
@@ -206,4 +204,5 @@ if exist "!ConfigPath!" (
   )
 )
 
+if defined CustomHooks if exist "%CustomHooks%\%~nx0" call %CustomHooks%\%~nx0
 call common log 系统钩子模块结束 阶段：%~n0%

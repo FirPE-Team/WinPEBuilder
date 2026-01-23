@@ -3,24 +3,43 @@ rem WindowsPE 初始化之前
 @echo off
 setlocal enabledelayedexpansion
 set "PATH=%~dp0;%PATH%"
-
 call common setWinPEDrive
-if defined CustomHooks if exist "%CustomHooks%\%~nx0" call %CustomHooks%\%~nx0
 
 rem 自定义壁纸
-if defined USBDrive if exist "%USBDrive%\wp.jpg" (
-  call common Log "WinPE初始化" "正在设置自定义壁纸"
-  rem 容错设置
-  if exist "%USBDrive%\wp.jpg.jpg" ren "%USBDrive%\wp.jpg.jpg" "wp.jpg"
-  rem 替换壁纸
-  copy /y "%USBDrive%\wp.jpg" "%SystemRoot%\Web\Wallpaper\Windows\img0.jpg"
-)
-if defined USBDrive if exist "%USBDrive%\dark.jpg" (
-  call common Log "WinPE初始化" "正在设置自定义暗色壁纸"
-  rem 容错设置
-  if exist "%USBDrive%\dark.jpg.jpg" ren "%USBDrive%\dark.jpg.jpg" "dark.jpg"
-  rem 替换壁纸
-  copy /y "%USBDrive%\dark.jpg" "%SystemRoot%\Web\Wallpaper\Windows\img0_dark.jpg"
+if defined USBDrive (
+  set "wallpaper="
+
+  if exist "%USBDrive%\wp.jpg" set "wallpaper=%USBDrive%\wp.jpg"
+  if not defined wallpaper if exist "%USBDrive%\wp.png" (
+    ren "%USBDrive%\wp.png" "wp.jpg"
+    set "wallpaper=%USBDrive%\wp.jpg"
+  )
+  if not defined wallpaper if exist "%USBDrive%\wp.bmp" (
+    ren "%USBDrive%\wp.bmp" "wp.jpg"
+    set "wallpaper=%USBDrive%\wp.jpg"
+  )
+
+  if defined wallpaper (
+    call common Log "WinPE初始化" "正在设置自定义壁纸"
+    rem 替换壁纸
+    copy /y "%wallpaper%" "%SystemRoot%\Web\Wallpaper\Windows\img0.jpg"
+  )
+
+  set "darkpaper="
+  if exist "%USBDrive%\dark.jpg" set "darkpaper=%USBDrive%\dark.jpg"
+  if not defined darkpaper if exist "%USBDrive%\dark.png" (
+    ren "%USBDrive%\dark.png" "dark.jpg"
+    set "darkpaper=%USBDrive%\dark.jpg"
+  )
+  if not defined darkpaper if exist "%USBDrive%\dark.bmp" (
+    ren "%USBDrive%\dark.bmp" "dark.jpg"
+    set "darkpaper=%USBDrive%\dark.jpg"
+  )
+
+  if defined darkpaper (
+    call common Log "WinPE初始化" "正在设置暗色壁纸"
+    copy /y "%darkpaper%" "%SystemRoot%\Web\Wallpaper\Windows\img0_dark.jpg"
+  )
 )
 
 if exist "!ConfigPath!" (
@@ -59,4 +78,5 @@ if exist "!ConfigPath!" (
   )
 )
 
+if defined CustomHooks if exist "%CustomHooks%\%~nx0" call %CustomHooks%\%~nx0
 call common log 系统钩子模块结束 阶段：%~n0%

@@ -19,4 +19,8 @@ goto :end_files
 \Windows\System32\DisplaySwitch.exe
 \Windows\System32\dwmapi.dll
 
+; 触摸屏关机所需文件
+\Windows\System32\SlideToShutDown.exe
+
+
 :end_files

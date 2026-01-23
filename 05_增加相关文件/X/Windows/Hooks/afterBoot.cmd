@@ -3,9 +3,7 @@ rem WinPE初始化之后
 @echo off
 setlocal enabledelayedexpansion
 set "PATH=%~dp0;%PATH%"
-
 call common setWinPEDrive
-if defined CustomHooks if exist "%CustomHooks%\%~nx0" call %CustomHooks%\%~nx0
 
 if exist "!ConfigPath!" (
   call common readini !ConfigPath! "应用程序" "自动理顺盘符"
@@ -32,7 +30,7 @@ if exist "!ConfigPath!" (
   )
   if "!value!"=="高性能" (
     call common Log "WinPE初始化" "正在设置电源计划: 高性能"
-    powercfg.exe /S 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"
+    powercfg.exe /S 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
   )
 
   call common readini !ConfigPath! "系统" "自动关闭屏幕时间" ""
@@ -54,7 +52,8 @@ dir /a /b "%USBDrive%\Drivers"|findstr .>nul 2>nul &&(
   call common Log "WinPE初始化" "正在加载自定义驱动"
   call common Tips WinPE初始化 正在加载自定义驱动 5000
   for /r "%USBDrive%\Drivers" %%i in (*.*) do (
-    DriverIndexer.exe --debug load-driver "%%i"
+    call common Log "WinPE初始化" "正在安装驱动: %%~nxi"
+    DriverIndexer.exe --log %SystemRoot%\Logs\DriverIndexer.log install "%%i" -m
   )
 )
 
@@ -90,4 +89,5 @@ if defined USBDrive if exist "%USBDrive%\LOGO.bmp" (
   Reg add "HKCU\Software\StartIsBack" /v "HideUserFrame" /t REG_DWORD /d "0" /f
 )
 
+if defined CustomHooks if exist "%CustomHooks%\%~nx0" call %CustomHooks%\%~nx0
 call common log 系统钩子模块结束 阶段：%~n0%

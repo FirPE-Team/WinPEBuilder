@@ -3,10 +3,7 @@ rem WindowsPE进入桌面之后
 @echo off
 setlocal enabledelayedexpansion
 set "PATH=%~dp0;%PATH%"
-
 call common setWinPEDrive
-if defined CustomHooks if exist "%CustomHooks%\%~nx0" call %CustomHooks%\%~nx0
-
 setx Path "%Path%;%ProgramFiles%\Edgeless\plugin_ept"
 
 rem 变更WCS、WCZ文件图标
@@ -60,7 +57,7 @@ Reg add "HKCR\Edgeless.esc\shell\open" /ve /t REG_SZ /d "" /f >nul
 Reg add "HKCR\Edgeless.esc\shell\open\command" /ve /t REG_SZ /d "X:\Windows\system32\pecmd exec ^!X:\Program Files\Edgeless\theme_processer\processTheme.cmd \"%%1\"" /f >nul
 
 rem 关联 Edgeless 系统图标资源包
-Reg add "HKCR\.ess" /ve /t REG_SZ /d "Edgeless.ess" /f
+Reg add "HKCR\.ess" /ve /t REG_SZ /d "Edgeless.ess" /f >nul
 Reg add "HKCR\Edgeless.ess" /ve /t REG_SZ /d "Edgeless 系统图标资源包" /f >nul
 Reg add "HKCR\Edgeless.ess\DefaultIcon" /ve /t REG_SZ /d "X:\Users\Icon\type\ess.ico" /f >nul
 Reg add "HKCR\Edgeless.ess\shell" /ve /t REG_SZ /d "" /f >nul
@@ -174,7 +171,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do if exist "%%d:\W
 )
 
 rem 为System文件夹（放置系统镜像）创建桌面快捷方式
-for %%u in (Z Y X W V U T S R Q P O N M L K J I H G F E D C) do if exist %%u:\System (
+for %%d in (Z Y X W V U T S R Q P O N M L K J I H G F E D C) do if exist %%d:\System (
   dir /b /a-d "%%d:\System\*.wim" "%%d:\System\*.esd" "%%d:\System\*.iso" 2>nul | findstr /i "\.wim$ \.esd$ \.iso$" >nul
   if not errorlevel 1 (
     if not defined FLAG (
@@ -192,6 +189,9 @@ if defined USBDrive if exist "%USBDrive%\Program Files" xcopy /s /r /y "%USBDriv
 if defined USBDrive if exist "%USBDrive%\Program Files (x86)" xcopy /s /r /y "%USBDrive%\Program Files (x86)\*" "X:\Program Files (x86)\*"
 if defined USBDrive if exist "%USBDrive%\Desktop" xcopy /s /r /y "%USBDrive%\Desktop\*" "%USERPROFILE%\Desktop\*"
 
+rem 外置EasyRC配置文件
+if defined USBDrive if exist "%USBDrive%\EasyRC.ini" copy /y "%USBDrive%\EasyRC.ini" "X:\Program Files (x86)\备份还原\EasyRC"
+
 rem 开机自动运行程序
 dir /a /b "%USBDrive%\Startup" | findstr . >nul 2>nul && (
   call common Log "WinPE初始化" "正在运行自定义程序"
@@ -206,15 +206,15 @@ rem 自定义工具
 dir /a /b "%USBDrive%\Tools" | findstr /v /x /i "Tools.json" | findstr . >nul 2>nul && (
   call common Log "WinPE初始化" "正在加载自定义工具"
   call common Tips "WinPE初始化" "正在加载自定义工具" 3000
-  if exist "%USBDrive%\Tools\Tools.json" set "ToolConfig=%USBDrive%\Tools\Tools.json"
+  if exist "%USBDrive%\Tools\Tools.toml" set "ToolConfig=%USBDrive%\Tools\Tools.toml"
   rem 处理绿色软件、单文件软件
-  AutoShortcut.exe -i "%USBDrive%\Tools" "%Desktop%" !ToolConfig! >>X:\Users\Log.txt
-  AutoShortcut.exe -c "%USBDrive%\Tools" "%Programs%" !ToolConfig! >>X:\Users\Log.txt
+  AutoShortcut.exe -i "%USBDrive%\Tools" "%Desktop%" !ToolConfig! >>"%SystemRoot%\Logs\AutoShortcut.log"
+  AutoShortcut.exe -c "%USBDrive%\Tools" "%Programs%" !ToolConfig! >>"%SystemRoot%\Logs\AutoShortcut.log"
   rem 处理软件包
-  for %%i in ("%USBDrive%\Tools\*.7z" "%USBDrive%\Tools\*.zip" "%USBDrive%\Tools\*.rar" "%USBDrive%p\Tools\*.wim") do (
+  for %%i in ("%USBDrive%\Tools\*.7z" "%USBDrive%\Tools\*.zip" "%USBDrive%\Tools\*.rar" "%USBDrive%\Tools\*.wim") do (
     "%ProgramFiles%\7-Zip\7z.exe" x "%%i"  -y -aos -o"%ProgramFiles%\%%~ni"
-    AutoShortcut.exe -i "%ProgramFiles%\%%~ni" "%Desktop%" !ToolConfig! >>X:\Users\Log.txt
-    AutoShortcut.exe -c "%ProgramFiles%\%%~ni" "%Programs%" !ToolConfig! >>X:\Users\Log.txt
+    AutoShortcut.exe -i "%ProgramFiles%\%%~ni" "%Desktop%" !ToolConfig! >>"%SystemRoot%\Logs\AutoShortcut.log"
+    AutoShortcut.exe -c "%ProgramFiles%\%%~ni" "%Programs%" !ToolConfig! >>"%SystemRoot%\Logs\AutoShortcut.log"
   )
   rem 刷新桌面
   PECMD ENVI @@DeskTopFresh=1
@@ -253,14 +253,15 @@ if not errorlevel 1 (
 rem 加载HotPEModule插件
 dir /s /b "%USBDrive%\HotPEModule\*.hpm">nul 2>nul
 if not errorlevel 1 (
-  call common Log "WinPE初始化" "正在加载HotPEModule插件"
-  call common Tips "WinPE初始化" "正在加载HotPEModule插件" 5000
+  call common Log "WinPE初始化" "正在加载HPM插件"
+  call common Tips "WinPE初始化" "正在加载HPM插件" 5000
   for /r "%USBDrive%\HotPEModule" %%i in (*.hpm) do (
     PECMD EXEC ^^!^^="%ProgramFiles%\HotPEModule\hpm_cli.exe" -i "%%i"
   )
-  call common Log "WinPE初始化" "完成HotPEModule插件加载"
+  call common Log "WinPE初始化" "完成HPM插件加载"
   rem 刷新桌面
   PECMD ENVI @@DeskTopFresh=1
 )
 
+if defined CustomHooks if exist "%CustomHooks%\%~nx0" call %CustomHooks%\%~nx0
 call common log 系统钩子模块结束 阶段：%~n0%
