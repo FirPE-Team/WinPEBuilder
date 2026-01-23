@@ -3,7 +3,16 @@ echo [MACRO]AddEnvVar %*
 setlocal enabledelayedexpansion
 set "raw_path=%~1"
 
-set "replace_list=%%X_PF%%=X:\Program Files;%%X_PF(x86)%%=Program Files (x86);%%X_WIN%%=X:\Windows;%%X_SYS%%=X:\Windows\System32;%%X_WOW64%%=X:\Windows\SysWOW64;%%X%%=X:"
+rem Convert absolute build paths to relative WinPE paths
+if defined X set "raw_path=!raw_path:%X%=X!"
+if defined X_WIN set "raw_path=!raw_path:%X_WIN%=X:\Windows!"
+if defined X_SYS set "raw_path=!raw_path:%X_SYS%=X:\Windows\System32!"
+if defined X_WOW64 set "raw_path=!raw_path:%X_WOW64%=X:\Windows\SysWOW64!"
+if defined X_PF set "raw_path=!raw_path:%X_PF%=X:\Program Files!"
+if defined X_PF86 set "raw_path=!raw_path:%X_PF86%=X:\Program Files (x86)!"
+
+rem Handling cases of delayed expansion with double percent signs
+set "replace_list=%%X_PF%%=X:\Program Files;%%X_PF(x86)%%=X:\Program Files (x86);%%X_WIN%%=X:\Windows;%%X_SYS%%=X:\Windows\System32;%%X_WOW64%%=X:\Windows\SysWOW64;%%X%%=X:"
 for %%m in ("!replace_list:;=" "!") do (
   for /f "tokens=1,2 delims==" %%a in (%%m) do set "raw_path=!raw_path:%%a=%%b!"
 )
