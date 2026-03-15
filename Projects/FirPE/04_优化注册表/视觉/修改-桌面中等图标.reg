@@ -1,0 +1,4 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\Microsoft\Windows\Shell\Bags\1\Desktop]
+"IconSize"=dword:00000030

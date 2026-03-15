@@ -1,0 +1,22 @@
+Windows Registry Editor Version 5.00
+
+;可禁止写入System Volume Information目录
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Policies\Microsoft\Windows NT\systemrestore]
+"DisableSR"=dword:00000001
+"DisableConfig"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\Policies\Microsoft\Windows NT\systemrestore]
+"DisableSR"=dword:00000001
+"DisableConfig"=dword:00000001
+
+;隐藏桌面回收站图标
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel]
+"{645FF040-5081-101B-9F08-00AA002F954E}"=dword:00000001
+
+;关闭回收站
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\Microsoft\Windows\CurrentVersion\Explorer]
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\Microsoft\Windows\CurrentVersion\Explorer\BitBucket]
+"LastEnum"=-
+[-HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\Microsoft\Windows\CurrentVersion\Explorer\BitBucket\Volume]
+;这项可能没有，手动建立
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\BitBucket]

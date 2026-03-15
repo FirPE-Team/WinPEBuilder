@@ -1,7 +1,0 @@
-Windows Registry Editor Version 5.00
-
-[HKEY_LOCAL_MACHINE\Tmp_Software\Classes\inffile\shell\install]
-@="安装"
-
-[HKEY_LOCAL_MACHINE\Tmp_Software\Classes\inffile\shell\install\command]
-@="pecmd.exe team exec !drvload.exe \"%1\"|MESS 驱动文件安装： \\n%1@驱动安装 #OK *10000"

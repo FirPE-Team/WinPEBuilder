@@ -1,0 +1,44 @@
+file X:\Users\LocalBoost\repoPart.txt
+call @windows1
+
+_SUB windows1,W300H120,安装插件到加速仓库,,X:\Users\Icon\type\plugin.ico,,
+
+LABE Label1,L30T20W240H40,您希望将哪个分区作为LocalBoost的默认仓库所在分区？
+
+ITEM Button1,L115T55W70H25,选择,call browse
+_END
+
+_SUB browse
+BROW Tag,*,,选择安装盘符
+MSTR disk=0,1,%Tag%
+IFEX %disk%:\<2048,call retry1
+IFEX |%disk%==X,call retry2
+IFEX %disk%:\FirPE,call retry3
+FIND $%Tag%=,!
+{
+    IFEX %disk%:\FirPE,!
+    {
+        IFEX [%disk%:\>=2048 & |%disk%<>X],call set
+    }
+}
+_END
+
+_SUB retry1,W300H120,磁盘空间不足,,X:\Users\Icon\shortcut\update.ico,,
+LABE Label1,L30T20W300H20,目标磁盘 %disk% 可用空间小于2GB，请重新选择
+ITEM Button1,L110T55W75H25,确定,kill \磁盘空间不足
+_END
+
+_SUB retry2,W300H120,分区不可用,,X:\Users\Icon\shortcut\update.ico,,
+LABE Label1,L50T20W300H20,安装位置不能在X分区内，请重新选择
+ITEM Button1,L110T55W75H25,确定,kill \分区不可用
+_END
+
+_SUB retry3,W300H120,分区不可用,,X:\Users\Icon\shortcut\update.ico,,
+LABE Label1,L50T20W300H20,安装位置不能在启动盘内，请重新选择
+ITEM Button1,L110T55W75H25,确定,kill \分区不可用
+_END
+
+_SUB set
+writ X:\Users\LocalBoost\repoPart.txt,$0,%disk%
+kill \安装插件到加速仓库
+_END

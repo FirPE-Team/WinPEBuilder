@@ -1,0 +1,83 @@
+//读取插件数量计数器并自增
+read "X:\Users\LocalBoost\Counter.txt",1,counter
+calc #counter=%counter%+1
+writ "X:\Users\LocalBoost\Counter.txt",$0,%counter%
+
+//读取目标路径并解析
+read "X:\Users\LocalBoost\unit.txt",1,TargetPath
+name -ext TargetName=%TargetPath%
+writ X:\Users\Log.txt,$+0,LocalBoost-loadUnit 启动，counter：%counter%，读取路径参数：%TargetPath%，解析名称为：%TargetName%
+
+//建立工作目录
+mdir  X:\Users\Plugins_info\Batch
+mdir  X:\Users\Plugins_info\Dir
+mdir  X:\Users\Plugins_info\File
+mdir %TargetPath%\_Batch
+mdir %TargetPath%\_BatchProtect
+
+//将插件记录到LocalBoost加载列表
+writ X:\Users\Plugins_info\List_LocalBoost.txt,$+0,%TargetName%
+
+//生成外置批处理列表，生成重命名的外置批处理放到_Batch目录并将源外置批处理放入保护目录_BatchProtect
+forx %TargetPath%\*,filePath,0,
+{
+    name -ext fileName=%filePath%
+    name fileName_noExt=%filePath%
+    mstr extName=-1,3,%fileName%
+    ifex '%extName%'='cmd',
+    {
+        writ X:\Users\Plugins_info\Batch\%TargetName%.txt,$+0,%fileName_noExt%_localboost_%counter%.cmd
+        file %filePath%=>%TargetPath%\_Batch\%fileName_noExt%_localboost_%counter%.cmd
+        file %filePath%->%TargetPath%\_BatchProtect
+    }
+    ifex '%extName%'='wcs',
+    {
+        writ X:\Users\Plugins_info\Batch\%TargetName%.txt,$+0,%fileName_noExt%_localboost_%counter%.wcs
+        file %filePath%=>%TargetPath%\_Batch\%fileName_noExt%_localboost_%counter%.wcs
+        file %filePath%->%TargetPath%\_BatchProtect
+    }
+    //ifex '%fileName%'='_LocalBoost.txt',file %filePath%
+}
+
+//生成暴露的依赖文件列表，为其创建链接（复制）
+forx %TargetPath%\*,filePath,0,
+{
+    name -ext fileName=%filePath%
+    writ X:\Users\Plugins_info\File\%TargetName%.txt,$+0,%fileName%
+    //flnk X:\Program Files\Edgeless\%fileName%,%filePath%,1
+    file %filePath%=>X:\Program Files\Edgeless
+}
+
+//复制外置批处理并运行
+forx %TargetPath%\_Batch\*,filePath,0,
+{
+    name -ext fileName=%filePath%
+    file %filePath%=>X:\Program Files\Edgeless
+    writ X:\Users\Log.txt,$+0,LocalBoost-loadUnit 正在运行：%fileName%
+    exec !X:\Program Files\Edgeless\%fileName%
+}
+
+//移除临时目录
+file %TargetPath%\_BatchProtect\*->%TargetPath%\
+file %TargetPath%\_Batch
+file %TargetPath%\_BatchProtect
+
+//生成依赖目录列表，为其创建链接
+forx @%TargetPath%\*,dirPath,0,
+{
+    name -ext dirName=%dirPath%
+    writ X:\Users\Plugins_info\Dir\%TargetName%.txt,$+0,%dirName%
+    flnk -j X:\Program Files\Edgeless\%dirName%,%dirPath%
+}
+
+//创建LocalBoost启动标记，检查兼容性
+set alert=0
+forx @%TargetPath%\*,dirPath,0,
+{
+    name -ext dirName=%dirPath%
+    writ %dirPath%\_LocalBoost.txt,$0,%TargetPath%\%dirName%
+
+    ifex %dirPath%\*.bat,set alert=1
+    ifex %dirPath%\*.cmd,set alert=1
+}
+ifex %alert%==1,exec !"X:\Program Files\Edgeless\dynamic_creator\dynamic_tip.cmd" 8000 LocalBoost兼容性警告 插件"%TargetName%"可能无法正常使用

@@ -1,0 +1,8 @@
+Windows Registry Editor Version 5.00
+
+[-HKEY_LOCAL_MACHINE\Tmp_SoftWare\Classes\*\ShellEx\ContextMenuHandlers\{a2a9545d-a0c2-42b4-9708-a0b2badd77c8}]
+[-HKEY_LOCAL_MACHINE\Tmp_SoftWare\Classes\Folder\shellex\ContextMenuHandlers\{a2a9545d-a0c2-42b4-9708-a0b2badd77c8}]
+[-HKEY_LOCAL_MACHINE\Tmp_SoftWare\Classes\AllFilesystemObjects\shellex\ContextMenuHandlers\{a2a9545d-a0c2-42b4-9708-a0b2badd77c8}]
+
+[-HKEY_LOCAL_MACHINE\Tmp_SoftWare\Classes\CLSID\{a2a9545d-a0c2-42b4-9708-a0b2badd77c9}]
+[-HKEY_LOCAL_MACHINE\Tmp_SoftWare\Classes\AllFilesystemObjects\shellex\ContextMenuHandlers\{a2a9545d-a0c2-42b4-9708-a0b2badd77c9}]

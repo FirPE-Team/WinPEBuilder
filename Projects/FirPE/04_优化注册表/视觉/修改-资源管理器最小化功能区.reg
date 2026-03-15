@@ -1,0 +1,4 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\Policies\Microsoft\Windows\Explorer]
+"ExplorerRibbonStartsMinimized"=dword:00000001

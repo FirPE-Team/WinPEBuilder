@@ -1,9 +1,0 @@
-Windows Registry Editor Version 5.00
-
-[HKEY_LOCAL_MACHINE\Tmp_Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
-"ShowSuperHidden"=dword:00000001
-"Hidden"=dword:00000001
-
-[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
-"ShowSuperHidden"=dword:00000001
-"Hidden"=dword:00000001

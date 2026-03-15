@@ -1,0 +1,20 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\7-Zip]
+"Lang"="zh-cn"
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\7-Zip\Options]
+"CascadedMenu"=dword:00000001
+"ContextMenu"=dword:00000337
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\*\shellex\ContextMenuHandlers\7-Zip]
+@="{23170F69-40C1-278A-1000-000100020000}"
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\CLSID\{23170F69-40C1-278A-1000-000100020000}]
+@="7-Zip Shell Extension"
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\CLSID\{23170F69-40C1-278A-1000-000100020000}\InprocServer32]
+@="X:\\Program Files\\7-Zip\\7-zip.dll"
+"ThreadingModel"="Apartment"
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers\7-Zip]
+@="{23170F69-40C1-278A-1000-000100020000}"
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Directory\shellex\DragDropHandlers\7-Zip]
+@="{23170F69-40C1-278A-1000-000100020000}"
+[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Classes\Drive\shellex\DragDropHandlers\7-Zip]
+@="{23170F69-40C1-278A-1000-000100020000}"    

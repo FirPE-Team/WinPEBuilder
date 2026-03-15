@@ -1,0 +1,14 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\PENETWORK]
+"StartToTray"=dword:00000001
+"MinimizeToTray"=dword:00000001
+"ShowTrayActivity"=dword:00000001
+"CloseToTray"=dword:00000001
+"GlobalFont"="Microsoft YaHei UI"
+"UseOSFont"=dword:00000001
+"Scheme"="Default"
+"WiFiCards"=dword:00000000
+"Profile"="Wireless"
+"PosX"=dword:00000133
+"PosY"=dword:000000b2

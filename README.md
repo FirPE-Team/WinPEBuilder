@@ -57,6 +57,8 @@ Hook 钩子脚本需要 CR+LF 换行，否则 CMD 会执行出错。
 
 - [StartAllBack](https://www.123pan.com/s/jKNSVv-Woutv.html)
 
+- [StartAllBack(破解)](https://rutracker.net/forum/tracker.php?nm=startallback)
+
 - [WinXShell](https://www.lanzoux.com/b011xhbsh) 密码: shell
 
 - [7-Zip-zstd](https://github.com/mcmilk/7-Zip-zstd/releases)
@@ -86,6 +88,8 @@ Hook 钩子脚本需要 CR+LF 换行，否则 CMD 会执行出错。
 - [DiskGenius](https://www.diskgenius.cn/download.php)（单文件版位于下方）
 
 - [分区助手](https://www.disktool.cn/download.html)
+
+> 提示：分区助手在WinPE下会修改分辨率（开发者执意不予修复），通过修改 `ChangeDisplaySettingsW`=>`ChangeDisplaySettingsA`可实现屏蔽修改分辨率
 
 - [WinHex](https://www.423down.com/995.html)
 

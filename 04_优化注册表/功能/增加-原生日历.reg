@@ -1,8 +1,0 @@
-Windows Registry Editor Version 5.00
-
-[HKEY_LOCAL_MACHINE\Tmp_SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell]
-"UseWin32TrayClockExperience"=dword:00000001
-"UseWin32BatteryFlyout"=dword:00000001
-
-[HKEY_LOCAL_MACHINE\Tmp_DEFAULT\Software\StartIsBack]
-"SysTrayStyle"=dword:00000002
