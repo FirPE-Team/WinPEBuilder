@@ -30,8 +30,7 @@ reg unload HKLM\Tmp_NTUSER.DAT
 rem 遍历 target 目录下所有一级子目录中的 mounted 文件夹
 for /d %%i in ("%cd%\target\*") do (
   if exist "%%i\mounted\" (
-    Dism /get-mountedwiminfo | findstr /i "%%i\mounted" >nul
-    if !errorlevel!==0 Dism /unmount-image /MountDir:"%%i\mounted" /discard
+    Dism /unmount-image /MountDir:"%%i\mounted" /discard 2>nul
     rd /s /q "%%i\mounted" 2>nul
   )
 
