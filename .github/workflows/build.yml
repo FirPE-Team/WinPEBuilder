@@ -154,7 +154,7 @@ jobs:
         id: build_windows
         shell: pwsh
         run: |
-          pwsh uup-tools\uup-dump-build-and-get-windows-iso\uup-dump-get-windows-iso.ps1 ${{ steps.map.outputs.version }} C:/WindowsISO -architecture x64 -edition pro -lang ${{ steps.map.outputs.lang }}
+          pwsh $env:GITHUB_WORKSPACE\uup-tools\uup-dump-get-windows-iso.ps1 ${{ steps.map.outputs.version }} C:/WindowsISO -architecture x64 -edition pro -lang ${{ steps.map.outputs.lang }}
           echo "iso_name=$env:ISO_NAME" >> $env:GITHUB_OUTPUT
 
       - name: Checkout Code
