@@ -165,7 +165,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: C:/WindowsISO 
-          key: Windows-${{ inputs.versions }}-x64-${{ inputs.language }}
+          key: ${{ steps.map.outputs.version }}_x64_${{ steps.map.outputs.lang }}
 
       - name: Build Windows ISO
         id: build_windows
