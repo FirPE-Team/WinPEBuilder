@@ -8,9 +8,9 @@ if "x%~1"=="x" goto :EOF
 echo [MACRO]AddDrivers %*
 
 if "x%ADDDRIVERS_INITED%"=="x" (
-    del /s /a /q "%APP_TMP_PATH%\_AddDrivers_INF.txt"
-    wimlib-imagex.exe dir "%APP_SRC%" %APP_SRC_INDEX% --path=\Windows\INF\ >"%APP_TMP_PATH%\_AddDrivers_INF.txt"
-    rem for /f "usebackq delims=" %%i in ("%APP_TMP_PATH%\_AddDrivers_INF.txt") do mkdir "%APP_TMP_PATH%\Windows_INF\%%~nxi"
+    del /s /a /q "%APP_TMP_PATH%\AddDrivers_INF.txt"
+    wimlib-imagex.exe dir "%APP_SRC%" %APP_SRC_INDEX% --path=\Windows\INF\ >"%APP_TMP_PATH%\AddDrivers_INF.txt"
+    rem for /f "usebackq delims=" %%i in ("%APP_TMP_PATH%\AddDrivers_INF.txt") do mkdir "%APP_TMP_PATH%\Windows_INF\%%~nxi"
     set ADDDRIVERS_INITED=1
 )
 
@@ -49,9 +49,9 @@ if "x%2"=="xREG" goto :AddDriver_Reg
 rem ==========update filesystem==========
 if %_AddDriver_Wildcard% EQU 1 goto :END_INF_CHECK
 if "x%findcmd%"=="xfindstr" (
-    findstr /i /c:"%~1" "%APP_TMP_PATH%\_AddDrivers_INF.txt" >nul
+    findstr /i /c:"%~1" "%APP_TMP_PATH%\AddDrivers_INF.txt" >nul
 ) else (
-    find /i "%~1" "%APP_TMP_PATH%\_AddDrivers_INF.txt" >nul
+    find /i "%~1" "%APP_TMP_PATH%\AddDrivers_INF.txt" >nul
 )
 if not "%errorlevel%"=="0" (
     echo [INFO] Driver does not exist^(%~1^).
@@ -63,10 +63,10 @@ set "_AddDriver_INF=%~1"
 set "_AddDriver_Name=%~n1"
 call AddFiles "%_AddDrivers_FILE%" :end_files
 goto :end_files
-windows\INF\%_AddDriver_INF%
+\Windows\INF\%_AddDriver_INF%
 \Windows\System32\drivers\%_AddDriver_Name%.sys
 \Windows\System32\DriverStore\FileRepository\%_AddDriver_INF%*
-\Windows\System32\DriverStore\%WB_PE_LANG%\%_AddDriver_INF%_loc
+\Windows\System32\DriverStore\%APP_PE_LANG%\%_AddDriver_INF%_loc
 :end_files
 set _AddDriver_INF=
 set _AddDriver_Name=

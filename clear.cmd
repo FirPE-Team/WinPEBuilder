@@ -1,29 +1,43 @@
 @echo off
 cd /d "%~dp0"
 
-set "X=%cd%\target\mounted"
-set "SRC_PATH=%cd%\target\install"
-set "APP_TMP_PATH=%cd%\target\temp"
-set "PROJECT_PATH=%cd%\projects\%PROJECT_NAME%"
-set "BUILD_WIM=%cd%\target\boot.wim"
+rem run with Administrators right
+call bin\IsAdmin.cmd
+
+if not ERRORLEVEL 1 (
+  if not "x%~1"=="xrunas" (
+    set ElevateMe=1
+    set "PATH=%PATH_ORG%"
+    bin\ElevateMe.vbs "%~0" "runas" %*
+  )
+  goto :EOF
+)
+if "x%~1"=="xrunas" shift
 
 rem 卸载注册表
 reg unload HKLM\Src_SOFTWARE
 reg unload HKLM\Src_SYSTEM
 reg unload HKLM\Src_DEFAULT
 reg unload HKLM\Src_DRIVERS
+reg unload HKLM\Src_NTUSER.DAT
 
 reg unload HKLM\Tmp_SOFTWARE
 reg unload HKLM\Tmp_SYSTEM
 reg unload HKLM\Tmp_DEFAULT
 reg unload HKLM\Tmp_DRIVERS
+reg unload HKLM\Tmp_NTUSER.DAT
 
-rem 卸载基础镜像......
-Dism /Unmount-Image /MountDir:"%cd%\target\mounted" /discard
+rem 遍历 target 目录下所有一级子目录中的 mounted 文件夹
+for /d %%i in ("%cd%\target\*") do (
+  if exist "%%i\mounted\" (
+    Dism /get-mountedwiminfo | findstr /i "%%i\mounted" >nul
+    if !errorlevel!==0 Dism /unmount-image /MountDir:"%%i\mounted" /discard
+    rd /s /q "%%i\mounted" 2>nul
+  )
 
-rem 清理文件
-rd /s /q "%SRC_PATH%"
-rd /s /q "%X%"
-rd /s /q "%APP_TMP_PATH%"
-del /A /F /Q "%cd%\target\winre.wim"
-del /A /F /Q "%cd%\target\base.wim"
+  rd /s /q "%%i\install" 2>nul
+  rd /s /q "%%i\Temp" 2>nul
+
+  del /A /F /Q "%cd%\target\winre.wim" 2>nul
+  del /A /F /Q "%cd%\target\base.wim" 2>nul
+)

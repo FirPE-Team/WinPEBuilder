@@ -26,6 +26,7 @@ $RECYCLE.BIN/
 
 # 忽略 PE 构建过程中生成的临时文件
 /mount/
+tmp/
 
 # 忽略 Git 相关文件（如 Git 钩子）
 /.git/
@@ -46,8 +47,3 @@ $RECYCLE.BIN/
 
 # 忽略引用素材
 /ref/
-
-# 忽略测试文件
-/tests/
-/lib/tests/
-test.cmd

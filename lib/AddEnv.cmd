@@ -1,4 +1,4 @@
-echo [MACRO]AddEnvVar %*
+echo [MACRO]AddEnv %*
 
 setlocal enabledelayedexpansion
 set "raw_path=%~1"

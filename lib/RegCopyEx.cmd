@@ -1,3 +1,10 @@
+rem MACRO:RegCopyEx TYPE KEY(s)
+rem Usage:
+rem       RegCopyEx Services NlaSvc
+rem       RegCopyEx Services WPDBusEnum,WpdUpFltr,WudfPf,WUDFRd
+rem       RegCopyEx Classes .msi
+rem       RegCopyEx Classes Msi.Package,Msi.Path
+
 if "x%~2"=="x" goto :EOF
 echo [MACRO]RegCopyEx %*
 

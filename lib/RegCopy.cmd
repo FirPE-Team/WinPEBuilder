@@ -1,3 +1,9 @@
+rem MACRO:RegCopy
+rem replace KEY_PATH to Src_XXX, Tmp_XXX and call reg.exe COPY
+rem Usage:
+rem       RegCopy [/-s] HKLM\System\ControlSet001\Services\NlaSvc
+rem       RegCopy [/-s] HKLM\Software\Microsoft\Windows\CurrentVersion\SideBySide\Winners *_microsoft.vc90.crt_*
+
 set _rcopt_subkey=/s
 if /i "x%~1"=="x/-s" (
   set _rcopt_subkey=
@@ -23,7 +29,7 @@ echo [MACRO]RegCopy %*
 
 if "x%~2"=="x" goto :_SimpleCopy
 set "find_key=%~2"
-for /f "delims=" %%A IN ('Reg Query "%src_key%" /s /f "%find_key%"') Do Call :_RegCopy "%%A"
+for /f "delims=" %%A IN ('Reg Query "%src_key%" /f "%find_key%"') Do Call :_RegCopy "%%A"
 goto :EOF
 
 :_SimpleCopy
@@ -38,4 +44,3 @@ rem Reg Query "%found_key%" >nul 2>nul
 ::If Not ErrorLevel 1 Echo Reg Copy "%HKeyOrg%" "%HKeyNew%" /S /F
 reg copy "%found_key%" "%tmp_key%" %_rcopt_subkey% /F
 goto :EOF
-
