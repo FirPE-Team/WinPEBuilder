@@ -1,0 +1,185 @@
+name: Build WindowsPE Cloud
+run-name: >
+  ${{ inputs.versions }}
+  ${{ fromJSON('{
+    "Arabic (Saudi Arabia)":"AR","Bulgarian (Bulgaria)":"BG","Czech (Czech Republic)":"CS","Danish (Denmark)":"DA","German (Germany)":"DE","Greek (Greece)":"EL",
+    "English (United Kingdom)":"EN","English (United States)":"EN","Spanish (Spain)":"ES","Spanish (Mexico)":"ES","Estonian (Estonia)":"ET","Finnish (Finland)":"FI",
+    "French (Canada)":"FR","French (France)":"FR","Hebrew (Israel)":"HE","Croatian (Croatia)":"HR","Hungarian (Hungary)":"HU","Italian (Italy)":"IT",
+    "Japanese (Japan)":"JA","Korean (Korea)":"KO","Lithuanian (Lithuania)":"LT","Latvian (Latvia)":"LV","Norwegian Bokmål (Norway)":"NB",
+    "Dutch (Netherlands)":"NL","Polish (Poland)":"PL","Portuguese (Brazil)":"PT","Portuguese (Portugal)":"PT","Romanian (Romania)":"RO","Russian (Russia)":"RU",
+    "Slovak (Slovakia)":"SK","Slovenian (Slovenia)":"SL","Serbian (Latin, Serbia)":"SR","Swedish (Sweden)":"SV","Thai (Thailand)":"TH","Turkish (Turkey)":"TR",
+    "Ukrainian (Ukraine)":"UK","Chinese (Simplified, China)":"ZH","Chinese (Traditional, Taiwan)":"ZH"
+  }')[inputs.language] }}
+on:
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: "Windows 版本选择"
+        type: choice
+        options:
+          - Windows 10 22H2
+          - Windows 11 23H2
+          - Windows 11 24H2
+          - Windows 11 24H2 BETA
+          - Windows 11 25H2
+          - Windows 11 25H2 BETA
+          - Windows 11 26H1
+          - Windows DEV
+          - Windows CANARY
+        default: Windows 11 25H2
+        required: true
+      language:
+        description: "语言选择"
+        type: choice
+        options:
+          - Arabic (Saudi Arabia)
+          - Bulgarian (Bulgaria)
+          - Czech (Czech Republic)
+          - Danish (Denmark)
+          - German (Germany)
+          - Greek (Greece)
+          - English (United Kingdom)
+          - English (United States)
+          - Spanish (Spain)
+          - Spanish (Mexico)
+          - Estonian (Estonia)
+          - Finnish (Finland)
+          - French (Canada)
+          - French (France)
+          - Hebrew (Israel)
+          - Croatian (Croatia)
+          - Hungarian (Hungary)
+          - Italian (Italy)
+          - Japanese (Japan)
+          - Korean (Korea)
+          - Lithuanian (Lithuania)
+          - Latvian (Latvia)
+          - Norwegian Bokmål (Norway)
+          - Dutch (Netherlands)
+          - Polish (Poland)
+          - Portuguese (Brazil)
+          - Portuguese (Portugal)
+          - Romanian (Romania)
+          - Russian (Russia)
+          - Slovak (Slovakia)
+          - Slovenian (Slovenia)
+          - Serbian (Latin, Serbia)
+          - Swedish (Sweden)
+          - Thai (Thailand)
+          - Turkish (Turkey)
+          - Ukrainian (Ukraine)
+          - Chinese (Simplified, China)
+          - Chinese (Traditional, Taiwan)
+        default: Chinese (Simplified, China)
+        required: true
+      revision:
+        description: "修订号（可选）"
+        type: string
+        required: false
+jobs:
+  build-pe:
+    # 运行环境
+    runs-on: windows-2022
+    steps:
+      - name: Checkout UUP Scripts
+        uses: actions/checkout@v6
+        with:
+          repository: https://github.com/marcinmajsc/uup-dump-build-and-get-windows-iso
+          path: uup-tools
+      - name: Map inputs
+        id: map
+        shell: pwsh
+        run: |
+          $langMap = @{
+            'Arabic (Saudi Arabia)'='ar-sa'
+            'Bulgarian (Bulgaria)'='bg-bg'
+            'Czech (Czech Republic)'='cs-cz'
+            'Danish (Denmark)'='da-dk'
+            'German (Germany)'='de-de'
+            'Greek (Greece)'='el-gr'
+            'English (United Kingdom)'='en-gb'
+            'English (United States)'='en-us'
+            'Spanish (Spain)'='es-es'
+            'Spanish (Mexico)'='es-mx'
+            'Estonian (Estonia)'='et-ee'
+            'Finnish (Finland)'='fi-fi'
+            'French (Canada)'='fr-ca'
+            'French (France)'='fr-fr'
+            'Hebrew (Israel)'='he-il'
+            'Croatian (Croatia)'='hr-hr'
+            'Hungarian (Hungary)'='hu-hu'
+            'Italian (Italy)'='it-it'
+            'Japanese (Japan)'='ja-jp'
+            'Korean (Korea)'='ko-kr'
+            'Lithuanian (Lithuania)'='lt-lt'
+            'Latvian (Latvia)'='lv-lv'
+            'Norwegian Bokmål (Norway)'='nb-no'
+            'Dutch (Netherlands)'='nl-nl'
+            'Polish (Poland)'='pl-pl'
+            'Portuguese (Brazil)'='pt-br'
+            'Portuguese (Portugal)'='pt-pt'
+            'Romanian (Romania)'='ro-ro'
+            'Russian (Russia)'='ru-ru'
+            'Slovak (Slovakia)'='sk-sk'
+            'Slovenian (Slovenia)'='sl-si'
+            'Serbian (Latin, Serbia)'='sr-latn-rs'
+            'Swedish (Sweden)'='sv-se'
+            'Thai (Thailand)'='th-th'
+            'Turkish (Turkey)'='tr-tr'
+            'Ukrainian (Ukraine)'='uk-ua'
+            'Chinese (Simplified, China)'='zh-cn'
+            'Chinese (Traditional, Taiwan)'='zh-tw'
+          }
+
+          $verMap = @{
+            'Windows 10 22H2'      = 'windows-10'
+            'Windows 11 23H2'      = 'windows-11old'
+            'Windows 11 24H2'      = 'windows-11'
+            'Windows 11 24H2 BETA' = 'windows-11beta'
+            'Windows 11 25H2'      = 'windows-11new'
+            'Windows 11 25H2 BETA' = 'windows-11dev'
+            'Windows 11 26H1'      = 'windows-1126h1'
+            'Windows DEV'          = 'windows-dev'
+            'Windows CANARY'       = 'windows-canary'
+          }
+
+          $langCode = $langMap['${{ inputs.language }}']
+          $verCode  = $verMap['${{ inputs.versions }}']
+
+          echo "lang=$langCode"    >> $env:GITHUB_OUTPUT
+          echo "version=$verCode"  >> $env:GITHUB_OUTPUT
+
+      - name: Build Windows ISO
+        id: build_windows
+        shell: pwsh
+        run: |
+          pwsh uup-tools\uup-dump-build-and-get-windows-iso\uup-dump-get-windows-iso.ps1 ${{ steps.map.outputs.version }} C:/WindowsISO -architecture x64 -edition pro -lang ${{ steps.map.outputs.lang }}
+          echo "iso_name=$env:ISO_NAME" >> $env:GITHUB_OUTPUT
+
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Run WinPEBuilder
+        shell: pwsh
+        run: |
+          # 获取 ISO 路径
+          $isoPath = (Get-ChildItem "C:\WindowsISO\*.iso" | Select-Object -First 1).FullName
+
+          # 挂载镜像
+          Mount-DiskImage -ImagePath $isoPath
+          $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter
+
+          # 运行 WinPEBuilder
+          .\WinPEBuilder.cmd --source-folder "${driveLetter}:" --project WinPE --make-iso
+
+          # 卸载镜像
+          Dismount-DiskImage -ImagePath $isoPath 
+
+      - name: Upload ISO artifact
+        id: upload_iso_artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.ISO_NAME }}
+          path: ./target/WinPE/*.iso
+          if-no-files-found: error
