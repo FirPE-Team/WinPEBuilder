@@ -85,7 +85,7 @@ jobs:
       - name: Checkout UUP Scripts
         uses: actions/checkout@v6
         with:
-          repository: https://github.com/marcinmajsc/uup-dump-build-and-get-windows-iso
+          repository: marcinmajsc/uup-dump-build-and-get-windows-iso
           path: uup-tools
       - name: Map inputs
         id: map
