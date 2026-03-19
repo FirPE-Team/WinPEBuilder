@@ -724,3 +724,7 @@ WinPEBuilder.cmd --source-wim "D:\win10v1903\sources\install.wim" --source-index
   ```batch
   WinPEBuilder.cmd --source-folder "D:\WindowsISO\sources" --project Windows11PE
   ```
+
+## 许可证
+
+BSD License
