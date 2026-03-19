@@ -86,7 +86,6 @@ on:
         required: false
 jobs:
   build:
-    # 运行环境
     runs-on: windows-2022
     steps:
       - name: Checkout Code
@@ -161,49 +160,49 @@ jobs:
           echo "lang=$langCode"    >> $env:GITHUB_OUTPUT
           echo "version=$verCode"  >> $env:GITHUB_OUTPUT
 
-      # - name: Cache Windows ISO
-      #   id: cache-iso
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: C:/WindowsISO 
-      #     key: Windows-${{ inputs.versions }}-x64-${{ inputs.language }}
+      - name: Cache Windows ISO
+        id: cache-iso
+        uses: actions/cache@v4
+        with:
+          path: C:/WindowsISO 
+          key: Windows-${{ inputs.versions }}-x64-${{ inputs.language }}
 
-      # - name: Build Windows ISO
-      #   id: build_windows
-      #   if: steps.cache-iso.outputs.cache-hit != 'true'
-      #   shell: pwsh
-      #   run: |
-      #     pwsh $env:GITHUB_WORKSPACE\uup-tools\uup-dump-get-windows-iso.ps1 ${{ steps.map.outputs.version }} C:/WindowsISO -architecture x64 -edition pro -lang ${{ steps.map.outputs.lang }}
-      #     echo "iso_name=$env:ISO_NAME" >> $env:GITHUB_OUTPUT
+      - name: Build Windows ISO
+        id: build_windows
+        if: steps.cache-iso.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          pwsh $env:GITHUB_WORKSPACE\uup-tools\uup-dump-get-windows-iso.ps1 ${{ steps.map.outputs.version }} C:/WindowsISO -architecture x64 -edition pro -lang ${{ steps.map.outputs.lang }}
+          echo "iso_name=$env:ISO_NAME" >> $env:GITHUB_OUTPUT
 
       - name: Run WinPEBuilder
         shell: pwsh
         run: |
-          # # 获取 ISO 路径
-          # $isoPath = (Get-ChildItem "C:\WindowsISO\*.iso" | Select-Object -First 1).FullName
-          # if ($null -eq $isoPath) {   
-          #   Write-Error "在 C:\WindowsISO 中未找到任何 ISO 文件！"
-          #   exit 1
-          # }
+          # 获取 ISO 路径
+          $isoPath = (Get-ChildItem "C:\WindowsISO\*.iso" | Select-Object -First 1).FullName
+          if ($null -eq $isoPath) {   
+            Write-Error "在 C:\WindowsISO 中未找到任何 ISO 文件！"
+            exit 1
+          }
 
-          # # 挂载镜像
-          # Mount-DiskImage -ImagePath $isoPath
+          # 挂载镜像
+          Mount-DiskImage -ImagePath $isoPath
 
-          # # 等待镜像挂载完成
-          # Start-Sleep -Seconds 5 
-          # $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter
-          # if ([string]::IsNullOrWhiteSpace($driveLetter)) {
-          #   Write-Error "无法获取挂载的盘符！"
-          #   Dismount-DiskImage -ImagePath $isoPath
-          #   exit 1
-          # }
-          # Write-Host "镜像已挂载到盘符: ${driveLetter}:"
+          # 等待镜像挂载完成
+          Start-Sleep -Seconds 5 
+          $driveLetter = (Get-DiskImage -ImagePath $isoPath | Get-Volume).DriveLetter
+          if ([string]::IsNullOrWhiteSpace($driveLetter)) {
+            Write-Error "无法获取挂载的盘符！"
+            Dismount-DiskImage -ImagePath $isoPath
+            exit 1
+          }
+          Write-Host "镜像已挂载到盘符: ${driveLetter}:"
 
           # 运行 WinPEBuilder
           & $env:GITHUB_WORKSPACE\WinPEBuilder.cmd --source-folder "${driveLetter}:" --project "${{ inputs.pe_project }}" --make-iso
 
           # 卸载镜像
-          # Dismount-DiskImage -ImagePath $isoPath
+          Dismount-DiskImage -ImagePath $isoPath
 
       - name: Upload ISO artifact
         id: upload_iso_artifact
