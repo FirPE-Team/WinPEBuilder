@@ -30,7 +30,6 @@ tmp/
 
 # 忽略 Git 相关文件（如 Git 钩子）
 /.git/
-/.gitattributes
 /.gitmodules
 
 # 忽略日志文件
