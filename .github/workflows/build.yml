@@ -209,6 +209,6 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.pe_project }}.iso
-          path: $env:GITHUB_WORKSPACE/target/${{ inputs.pe_project }}/*.iso
+          path: ${{ github.workspace }}/target/${{ inputs.pe_project }}/*.iso
           archive: false
           if-no-files-found: error
