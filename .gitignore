@@ -26,10 +26,10 @@ $RECYCLE.BIN/
 
 # 忽略 PE 构建过程中生成的临时文件
 /mount/
+tmp/
 
 # 忽略 Git 相关文件（如 Git 钩子）
 /.git/
-/.gitattributes
 /.gitmodules
 
 # 忽略日志文件
@@ -47,10 +47,5 @@ $RECYCLE.BIN/
 # 忽略引用素材
 /ref/
 
-# 忽略测试文件
-/tests/
-/lib/tests/
-test.cmd
-
-# 忽略维护软件
-/Projects/FirPE/06_增加维护软件/X_PF(x86)
+# 忽略应用软件
+/vendor/Apps/
