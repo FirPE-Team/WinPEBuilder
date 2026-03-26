@@ -110,10 +110,17 @@ if exist "%APP_SRC_FOLDER%\sources\install.wim" (
 )
 echo ————————————————————————————————————————————————
 for /f "tokens=2 delims=: " %%a in ('Dism.exe /English /Get-WimInfo /WimFile:"%APP_SRC%" ^| findstr /i Index') do (
-  for /f "tokens=2 delims=:" %%b in ('Dism.exe /English /Get-WimInfo /WimFile:"%APP_SRC%" /Index:%%a ^| findstr /i Name') do (set Name=%%b)
-  for /f "tokens=2 delims=:" %%c in ('Dism.exe /English /Get-WimInfo /WimFile:"%APP_SRC%" /Index:%%a ^| findstr /i Version') do (set Version=%%c)
-  for /f "tokens=3 delims=: " %%d in ('Dism.exe /English /Get-WimInfo /WimFile:"%APP_SRC%" /Index:%%a ^| findstr /i Build') do (set Build=%%d)
-  for /f "tokens=2 delims=:" %%e in ('Dism.exe /English /Get-WimInfo /WimFile:"%APP_SRC%" /Index:%%a ^| findstr /i Architecture') do (set Architecture=%%e)
+  Dism.exe /English /Get-WimInfo /WimFile:"%APP_SRC%" /Index:%%a >"%TEMP%\wiminfo_%%a.tmp" 2>nul
+  rem 转换为UTF-8编码
+  iconv -f GBK -t UTF-8 "%TEMP%\wiminfo_%%a.tmp" > "%TEMP%\wiminfo_%%a_utf8.tmp" 2>nul
+  del "%TEMP%\wiminfo_%%a.tmp" 2>nul
+
+  for /f "tokens=2 delims=:" %%b in ('type "%TEMP%\wiminfo_%%a_utf8.tmp" ^| findstr /i Name') do set Name=%%b
+  for /f "tokens=2 delims=:" %%c in ('type "%TEMP%\wiminfo_%%a_utf8.tmp" ^| findstr /i Version') do set Version=%%c
+  for /f "tokens=3 delims=: " %%d in ('type "%TEMP%\wiminfo_%%a_utf8.tmp" ^| findstr /i Build') do set Build=%%d
+  for /f "tokens=2 delims=:" %%e in ('type "%TEMP%\wiminfo_%%a_utf8.tmp" ^| findstr /i Architecture') do set Architecture=%%e
+
+  del "%TEMP%\wiminfo_%%a_utf8.tmp" 2>nul
   echo  %%a	!Name! !Version!.!Build! !Architecture!
   set index=%%a
 )
