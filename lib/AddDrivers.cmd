@@ -8,7 +8,7 @@ if "x%~1"=="x" goto :EOF
 echo [MACRO]AddDrivers %*
 
 if "x%ADDDRIVERS_INITED%"=="x" (
-    del /s /a /q "%APP_TMP_PATH%\AddDrivers_INF.txt"
+    del /s /a /q "%APP_TMP_PATH%\AddDrivers_INF.txt" 2>nul
     wimlib-imagex.exe dir "%APP_SRC%" %APP_SRC_INDEX% --path=\Windows\INF\ >"%APP_TMP_PATH%\AddDrivers_INF.txt"
     rem for /f "usebackq delims=" %%i in ("%APP_TMP_PATH%\AddDrivers_INF.txt") do mkdir "%APP_TMP_PATH%\Windows_INF\%%~nxi"
     set ADDDRIVERS_INITED=1

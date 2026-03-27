@@ -27,6 +27,9 @@ if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
   set "PATH=%APP_ROOT%\bin\x86;%PATH%"
 )
 
+set findcmd=findstr
+if not exist "%windir%\System32\findstr.exe" set findcmd=find
+
 rem run with Administrators right
 call IsAdmin.cmd
 
