@@ -160,7 +160,13 @@ echo  2     WinRE.wim (卷1) (适用于WinRE修订号同步的镜像)
 echo        自定义基础镜像 (卷1)
 echo ————————————————————————————————————————————————
 set /p bore=请输入基础镜像：
-if "%bore%"=="" (set bore=1&echo 没有选择 wim,已自动选择 boot.wim)
+if "%bore%"=="" (set bore=1&echo 没有选择 wim,已自动选择 Boot.wim)
+
+echo.
+choice /M "是否制作ISO镜像？"
+if %errorlevel%==1 set APP_OPT_MAKE_ISO=1
+if %errorlevel%==2 set APP_OPT_MAKE_ISO=0
+
 if "%bore%"=="1" (
   if not exist "%cd%\target\%APP_PROJECT%" mkdir "%cd%\target\%APP_PROJECT%"
   copy /y "%APP_SRC_FOLDER:~,1%:\sources\boot.wim" "%cd%\target\%APP_PROJECT%\base.wim" >nul
@@ -178,11 +184,6 @@ if "%bore%"=="1" (
   set "APP_BASE_PATH=%cd%\target\%APP_PROJECT%\base.wim"
   set APP_BASE_INDEX=1
 ) else echo 没有选择对应的项目 & goto :cui
-
-echo.
-choice /M "是否制作ISO镜像？"
-if %errorlevel%==1 set APP_OPT_MAKE_ISO=1
-if %errorlevel%==2 set APP_OPT_MAKE_ISO=0
 
 :build
 set startime=%time:~0,2%%time:~3,2%%time:~6,2%
