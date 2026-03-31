@@ -16,11 +16,7 @@ if "x%APP_TMP_PATH%"=="x" (
   set "APP_TMP_PATH=%APP_ROOT%\target\%APP_PROJECT%\Temp"
 )
 
-rem call _CustomISO_
-call :CustomISO
-
 rem auto create the _ISO_
-
 call :MKPATH "%ISO_DIR%\sources\"
 if not exist "%ISO_DIR%\bootmgr" (
   if exist "%APP_SRC_FOLDER%\boot" (
@@ -37,6 +33,9 @@ if not exist "%ISO_DIR%\boot\etfsboot.com" (
 )
 
 copy /y "%BUILD_WIM%" "%ISO_DIR%\sources\boot.wim"
+
+rem call _CustomISO_
+call :CustomISO
 
 set EFI_BIN=efisys_noprompt.bin
 ren "%ISO_DIR%\boot\bootfix.bin" bootfix.bin.bak
@@ -61,5 +60,6 @@ if not exist "%~dp1" mkdir "%~dp1"
 goto :EOF
 
 :CustomISO
-bcdedit.exe /store "%ISO_PATH%\boot\bcd" /set {default} bootmenupolicy Legacy
+rem set default boot to Legacy
+bcdedit.exe /store "%ISO_DIR%\boot\bcd" /set {default} bootmenupolicy Legacy
 goto :EOF
