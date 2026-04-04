@@ -16,6 +16,7 @@ if "x%ADDFILES_INITED%"=="x" (
 setlocal enabledelayedexpansion
 
 for /f "tokens=3 delims=." %%a in ("%APP_PE_VER%") do set BUILD_NUM=%%a
+set "g_syswow64="
 
 type nul>"%APP_TMP_PATH%\AddFiles.txt"
 
@@ -86,6 +87,16 @@ if "%line:~0,1%"=="@" (
   goto :EOF
 )
 
+rem parse syswow64 toggle
+if /i "!line!"=="+syswow64" (
+  set "g_syswow64=\Windows\SysWOW64\"
+  goto :EOF
+)
+if /i "!line!"=="-syswow64" (
+  set "g_syswow64="
+  goto :EOF
+)
+
 rem parse version check
 if /i "!line:~0,4!"=="+ver" (
   call :check_ver "!line!"
@@ -147,22 +158,27 @@ if not "%fn:~0,1%"=="\" set fn=%g_path%%fn%
 rem write to extract list file
 echo %fn%>>"%APP_TMP_PATH%\AddFiles.txt"
 
-rem handle MUI and MUN
-echo "%fn%" | findstr /c:"*" /c:"?" >nul && goto :EOF
-for %%F in ("%fn%") do set "name=%%~nxF"
+rem append syswow64 version
+if not "%g_syswow64%"=="" (
+  echo \Windows\SysWOW64\!fn:~18!>>"%APP_TMP_PATH%\AddFiles.txt"
+)
 
 rem append mui file
 set muifile=
-if /i "%fn:~0,18%"=="\Windows\System32\" set "muifile=\Windows\System32\%APP_PE_LANG%\%name%.mui"
-if /i "%fn:~0,18%"=="\Windows\SysWOW64\" set "muifile=\Windows\SysWOW64\%APP_PE_LANG%\%name%.mui"
+if /i "%fn:~0,18%"=="\Windows\System32\" set "muifile=\Windows\System32\%APP_PE_LANG%\!fn:~18!.mui"
+if /i "%fn:~0,18%"=="\Windows\SysWOW64\" set "muifile=\Windows\SysWOW64\%APP_PE_LANG%\!fn:~18!.mui"
 if not "%muifile%"=="" (
   rem findstr /i /c:"!muifile!" "%APP_TMP_PATH%\AddFiles_SYSMUI.txt">nul && echo !muifile!>>"%APP_TMP_PATH%\AddFiles.txt"
+  if defined MUI_LIST[!muifile!] echo !muifile!>>"%APP_TMP_PATH%\AddFiles.txt"
+)
+if not "%g_syswow64%"=="" (
+  set "muifile=\Windows\SysWOW64\%APP_PE_LANG%\!fn:~18!.mui"
   if defined MUI_LIST[!muifile!] echo !muifile!>>"%APP_TMP_PATH%\AddFiles.txt"
 )
 
 rem append mun file
 if /i "%fn:~0,18%"=="\Windows\System32\" (
-  set "munfile=\Windows\SystemResources\%name%.mun"
+  set "munfile=\Windows\SystemResources\!fn:~18!.mun"
   rem findstr /i /c:"!munfile!" "%APP_TMP_PATH%\AddFiles_SYSRES.txt">nul && echo !munfile!>>"%APP_TMP_PATH%\AddFiles.txt"
   if defined MUN_LIST[!munfile!] echo !munfile!>>"%APP_TMP_PATH%\AddFiles.txt"
 )
