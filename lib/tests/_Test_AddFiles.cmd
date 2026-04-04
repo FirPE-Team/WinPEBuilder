@@ -46,6 +46,8 @@ goto :EOF
 @\Windows\System32\
 drivers\gm.dls
 
++syswow64
+
 ;Microsoft Direct2D
 d2d1.dll
 goto :EOF
