@@ -2,6 +2,7 @@ echo [MACRO]DelFiles %*
 setlocal enabledelayedexpansion
 
 for /f "tokens=3 delims=." %%a in ("%APP_PE_VER%") do set BUILD_NUM=%%a
+set "g_syswow64="
 
 if "%~2"=="" (
   set "code_file="
@@ -15,6 +16,7 @@ rem single line mode
 if "%code_file%"=="" (
   for /f "delims=" %%G in ("%code_word%") do set "g_path=%%~pG"
   call :parser "%code_word%"
+  goto :end
 )
 
 rem multi line mode
@@ -62,6 +64,16 @@ if "%line:~0,1%"=="@" (
   if not "!prefix:~0,1!"=="\" set "prefix=\!prefix!"
   if not "!prefix:~-1!"=="\" set "prefix=!prefix!\"
   set "g_path=!prefix!"
+  goto :EOF
+)
+
+rem parse syswow64 toggle
+if /i "!line!"=="+syswow64" (
+  set "g_syswow64=\Windows\SysWOW64\"
+  goto :EOF
+)
+if /i "!line!"=="-syswow64" (
+  set "g_syswow64="
   goto :EOF
 )
 
@@ -134,25 +146,29 @@ dir/ad "%X%%fn%" >nul 2>nul && (
   echo %fn%
   del /f /a /q "%X%%fn%" >nul 2>nul
 
-  for %%F in ("%fn%") do set "name=%%~nxF"
+  rem delete syswow64 version
+  if not "%g_syswow64%"=="" if exist "%X%%g_syswow64%\!fn:~18!" (
+    echo %g_syswow64%!fn:~18!
+    del /f /a /q "%X%%g_syswow64%!fn:~18!" >nul 2>nul
+  )
+
   rem delete mui file
-  if /i "%fn:~0,18%"=="\Windows\System32\" (
-    if exist "%X%\Windows\System32\%APP_PE_LANG%\%name%.mui" (
-      echo \Windows\System32\%APP_PE_LANG%\%name%.mui
-      del /f /a /q "%X%\Windows\System32\%APP_PE_LANG%\%name%.mui" >nul 2>nul
-    )
+  set muifile=
+  if /i "%fn:~0,18%"=="\Windows\System32\" set "muifile=\Windows\System32\%APP_PE_LANG%\!fn:~18!.mui"
+  if /i "%fn:~0,18%"=="\Windows\SysWOW64\" set "muifile=\Windows\SysWOW64\%APP_PE_LANG%\!fn:~18!.mui"
+  if not "%muifile%"=="" if exist "%X%%muifile%" (
+    echo %muifile%
+    del /f /a /q "%X%%muifile%" >nul 2>nul
   )
-  rem delete mui file (SysWOW64)
-  if /i "%fn:~0,18%"=="\Windows\SysWOW64\" (
-    if exist "%X%\Windows\SysWOW64\%APP_PE_LANG%\%name%.mui" (
-      echo \Windows\SysWOW64\%APP_PE_LANG%\%name%.mui
-      del /f /a /q "%X%\Windows\SysWOW64\%APP_PE_LANG%\%name%.mui" >nul 2>nul
-    )
+  if not "%g_syswow64%"=="" if exist "%X%%g_syswow64%%APP_PE_LANG%\!fn:~18!.mui" (
+    echo %g_syswow64%%APP_PE_LANG%\!fn:~18!.mui
+    del /f /a /q "%X%%g_syswow64%%APP_PE_LANG%\!fn:~18!.mui" >nul 2>nul
   )
+
   rem delete mun file
-  if /i "%fn:~0,9%"=="\Windows\" if exist "%X%\Windows\SystemResources\%name%.mun" if not exist "%X%\Windows\System32\%name%" if not exist "%X%\Windows\SysWOW64\%name%" (
-    echo \Windows\SystemResources\%name%.mun
-    del /f /a /q "%X%\Windows\SystemResources\%name%.mun" >nul 2>nul
+  if /i "%fn:~0,9%"=="\Windows\" if exist "%X%\Windows\SystemResources\!fn:~18!.mun" if not exist "%X%\Windows\System32\!fn:~18!" if not exist "%X%\Windows\SysWOW64\!fn:~18!" (
+    echo \Windows\SystemResources\!fn:~18!.mun
+    del /f /a /q "%X%\Windows\SystemResources\!fn:~18!.mun" >nul 2>nul
   )
 )
 
