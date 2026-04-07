@@ -80,13 +80,13 @@ set "X=%~dp0tmp"
 
 rem ============================================================================
 
-call DelFilesEX \Windows\zh-cn\* "notepad.exe.mui,regedit.exe.mui"
-call DelFilesEX \Windows\System32\dm*.dll "dm1.dll,dm2.dll"
-call DelFilesEX \Windows\System32\drivers\*.sys "ntfs.sys,cng.sys"
+call KeepFiles \Windows\zh-cn\* "notepad.exe.mui,regedit.exe.mui"
+call KeepFiles \Windows\System32\dm*.dll "dm1.dll,dm2.dll"
+call KeepFiles \Windows\System32\drivers\*.sys "ntfs.sys,cng.sys"
 
 rem ============================================================================
 
-call DelFilesEX \Windows\System32\drivers\*.sys %0 :end_files
+call KeepFiles \Windows\System32\drivers\*.sys %0 :end_files
 goto :end_files
 
 ntfs.sys
@@ -98,7 +98,7 @@ pci.sys
 :end_files
 rem ============================================================================
 
-call DelFilesEX \Windows\System32\*.exe %0 :[keep_exe_files]
+call KeepFiles \Windows\System32\*.exe %0 :[keep_exe_files]
 goto :EOF
 
 :[keep_exe_files]
