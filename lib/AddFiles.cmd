@@ -32,6 +32,7 @@ rem single line mode
 if "%code_file%"=="" (
   for /f "delims=" %%G in ("%code_word%") do set "g_path=%%~pG"
   call :parser "%code_word%"
+  goto :end
 )
 
 rem multi line mode
