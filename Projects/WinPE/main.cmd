@@ -6,3 +6,5 @@ set VER[4]=%APP_PE_BUILD%
 set VER[3.4]=%VER[3]%.%VER[4]%
 
 set VER
+
+set CatRoot=\Windows\System32\CatRoot\{F750E6C3-38EE-11D1-85E5-00C04FC295EE}

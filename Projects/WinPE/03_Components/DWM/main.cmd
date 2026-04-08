@@ -49,11 +49,16 @@ rem ==========update registry==========
 call RegCopy HKLM\SYSTEM\ControlSet001\Services\CoreMessagingRegistrar
 reg add HKLM\Tmp_SYSTEM\Setup\AllowStart\CoreMessagingRegistrar /f
 
+reg query "HKLM\Tmp_Software\Microsoft\SecurityManager\TransientObjects\%5C%5C.%5CAlpcPort%5CMPCManager" 1>nul 2>nul
+if ERRORLEVEL 1 reg import TransientObjects_MPCManager.reg
+
 call RegCopy HKLM\Software\Microsoft\Windows\DWM
 reg add HKLM\Tmp_Software\Microsoft\Windows\DWM /v OneCoreNoBootDWM /t REG_DWORD /d 0 /f
 
 rem 启用圆角窗口（Windows 11 22621+）
-reg add HKLM\Tmp_Software\Microsoft\Windows\DWM /v ForceEffectMode /t REG_DWORD /d 2 /f
+if %VER[3]% GEQ 22621 (
+  reg add HKLM\Tmp_Software\Microsoft\Windows\DWM /v ForceEffectMode /t REG_DWORD /d 2 /f
+)
 
 rem No shadow effect, so force ColorPrevalence to 1
 reg add HKLM\Tmp_Software\Microsoft\Windows\DWM /v ColorPrevalence /t REG_DWORD /d 1 /f

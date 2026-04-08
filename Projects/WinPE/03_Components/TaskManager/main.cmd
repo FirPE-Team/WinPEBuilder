@@ -19,5 +19,4 @@ goto :end_files
 
 rem ==========update registry==========
 
-reg add HKLM\Tmp_Software\Microsoft\Windows\CurrentVersion\Run /v DiskUsageInTaskmangerPerformanceTab /d "diskperf.exe -y" /f
-reg import TaskManager_RegDefault.reg
+reg add "HKLM\Tmp_SYSTEM\ControlSet001\Services\partmgr" /v "EnableCounterForIoctl" /t REG_DWORD /d "1" /f

@@ -1,0 +1,25 @@
+rem // Function Discovery Provider Host and Publication and SSDP Discovery services
+call RegCopyEx Services "fdPHost,FDResPub,SSDPSRV"
+
+call ACLRegKey "Tmp_SYSTEM\ControlSet001\Services\FDResPub" S-1-1-0 -
+
+call AddFiles %0 :end_files
+goto :end_files
+
+@\Windows\System32\
+
+; Core
+fdPHost.dll,fdProxy.dll,FDResPub.dll,fdSSDP.dll,fdWSD.dll,WSDApi.dll
+
+; More
+;fdBth.dll,fdBthProxy.dll,FdDevQuery.dll,fde.dll,fdeploy.dll,fdPnp.dll,fdprint.dll,fdWCN.dll,fdWNet.dll
+
+; SSDP Discovery services
+ssdpapi.dll,ssdpsrv.dll
+:end_files
+
+call RegCopy "HKLM\Software\Microsoft\Function Discovery"
+call RegCopy "HKLM\Software\Microsoft\UPnP Device Host"
+
+rem Network facilities
+call RegCopyEx Classes NetworkExplorerPlugins
