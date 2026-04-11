@@ -161,7 +161,7 @@ echo %fn%>>"%APP_TMP_PATH%\AddFiles.txt"
 
 rem append syswow64 version
 if not "%g_syswow64%"=="" (
-  echo \Windows\SysWOW64\!fn:~18!>>"%APP_TMP_PATH%\AddFiles.txt"
+  echo %g_syswow64%!fn:~18!>>"%APP_TMP_PATH%\AddFiles.txt"
 )
 
 rem append mui file
@@ -173,7 +173,8 @@ if not "%muifile%"=="" (
   if defined MUI_LIST[!muifile!] echo !muifile!>>"%APP_TMP_PATH%\AddFiles.txt"
 )
 if not "%g_syswow64%"=="" (
-  set "muifile=\Windows\SysWOW64\%APP_PE_LANG%\!fn:~18!.mui"
+  set "muifile=%g_syswow64%%APP_PE_LANG%\!fn:~18!.mui"
+  rem findstr /i /c:"!muifile!" "%APP_TMP_PATH%\AddFiles_SYSMUI.txt">nul && echo !muifile!>>"%APP_TMP_PATH%\AddFiles.txt"
   if defined MUI_LIST[!muifile!] echo !muifile!>>"%APP_TMP_PATH%\AddFiles.txt"
 )
 
