@@ -34,6 +34,10 @@ compmgmt.msc,CompMgmtLauncher.exe
 ; Filesystem Management
 fsmgmt.msc
 
++if %APP_PE_LANG% == zh-CN
+zh-CN\compmgmt.msc
+-if
+
 :end_files
 rem ============================================================================
 

@@ -16,6 +16,7 @@ if "x%ADDFILES_INITED%"=="x" (
 setlocal enabledelayedexpansion
 
 for /f "tokens=3 delims=." %%a in ("%APP_PE_VER%") do set BUILD_NUM=%%a
+set "g_if_skip=0"
 set "g_syswow64="
 
 type nul>"%APP_TMP_PATH%\AddFiles.txt"
@@ -88,6 +89,22 @@ if "%line:~0,1%"=="@" (
   goto :EOF
 )
 
+rem parse if condition
+if /i "!line:~0,3!"=="+if" (
+  call :check_if !line:~4!
+  if !ERRORLEVEL! EQU 0 (
+    set "g_if_skip=0"
+  ) else (
+    set "g_if_skip=1"
+  )
+  goto :EOF
+)
+if /i "!line!"=="-if" (
+  set "g_if_skip=0"
+  goto :EOF
+)
+if "!g_if_skip!"=="1" goto :EOF
+
 rem parse syswow64 toggle
 if /i "!line!"=="+syswow64" (
   set "g_syswow64=\Windows\SysWOW64\"
@@ -114,6 +131,13 @@ for /f "tokens=1* delims=," %%a in ("%line%") do (
   )
 )
 goto :EOF
+
+:check_if
+if %* (
+  exit /b 0
+) else (
+  exit /b 1
+)
 
 :check_ver
 set "ver_cmd=%~1"
