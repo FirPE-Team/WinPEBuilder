@@ -131,17 +131,17 @@ rem trim leading and trailing spaces
 :trim
 if "%fn:~0,1%"==" " set "fn=%fn:~1%" & goto :trim
 if "%fn:~-1%"==" " set "fn=%fn:~0,-1%" & goto :trim
+if "%fn:~-1%"=="\" set "fn=%fn:~0,-1%"
 
 rem complete absolute path
 if not "%fn:~0,1%"=="\" set "fn=%g_path%%fn%"
 
 if not exist "%X%%fn%" goto :EOF
-
-dir/ad "%X%%fn%" >nul 2>nul && (
+if exist "%X%%fn%\" (
   rem delete dir
   echo %fn%
   rd /s /q "%X%%fn%" >nul 2>nul
-) || (
+) else if exist "%X%%fn%" (
   rem delete file
   echo %fn%
   del /f /a /q "%X%%fn%" >nul 2>nul
