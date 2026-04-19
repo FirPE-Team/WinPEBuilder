@@ -186,7 +186,8 @@ if "%bore%"=="1" (
 ) else echo 没有选择对应的项目 & goto :cui
 
 :build
-set startime=%time:~0,2%%time:~3,2%%time:~6,2%
+set "t=%time: =0%"
+set /a "start_ts=(1%t:~0,2%-100)*3600 + (1%t:~3,2%-100)*60 + (1%t:~6,2%-100)"
 
 echo \033[93;46m [构建] 获取基础镜像信息...... | CmdColor.exe
 for /f "tokens=1,2 delims=:(" %%i in ('Dism.exe /Get-WimInfo /WimFile:"%APP_BASE_PATH%" /Index:%APP_BASE_INDEX% /English') do (
@@ -327,10 +328,17 @@ rd /s /q "%ISO_DIR%" 2>nul
 del /A /F /Q "%cd%\target\%APP_PROJECT%\winre.wim" 2>nul
 del /A /F /Q "%cd%\target\%APP_PROJECT%\base.wim" 2>nul
 
-set endtime=%time:~0,2%%time:~3,2%%time:~6,2%
-set /a finaltime=%endtime%-%startime%
+set "t=%time: =0%"
+set /a "end_ts=(1%t:~0,2%-100)*3600 + (1%t:~3,2%-100)*60 + (1%t:~6,2%-100)"
+set /a "diff=end_ts - start_ts"
+if %diff% LSS 0 set /a "diff+=86400"
+set /a "min=diff / 60, sec=diff %% 60"
+if %min% GTR 0 (
+  echo \033[93;46m [完成] WinPE制作完成，总耗时%min%分%sec%秒. | CmdColor.exe
+) else (
+  echo \033[93;46m [完成] WinPE制作完成，总耗时%sec%秒. | CmdColor.exe
+)
 
-echo \033[93;46m [完成] WinPE制作完成，总耗时%finaltime%秒. | CmdColor.exe
 call RunHooks finished.cmd
 if "x%APP_EXEC_MODE%"=="x1" goto :EOF
 cmd /k
