@@ -60,7 +60,7 @@ for /f "delims=" %%i in (!code_file!) do (
 
 :end
 
-type "%APP_TMP_PATH%\AddFiles.txt
+type "%APP_TMP_PATH%\AddFiles.txt"
 echo.
 
 rem extract AddFiles.txt to mounted directory with wimlib
