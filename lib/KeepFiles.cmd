@@ -17,6 +17,7 @@ rem single line mode
 if "%code_file%"=="" (
   for /f "delims=" %%G in ("%code_word%") do set "g_path=%%~pG"
   call :parser "%code_word%"
+  goto :end
 )
 
 rem multi line mode
@@ -44,7 +45,7 @@ for /f "delims=" %%i in (!code_file!) do (
 for %%I in ("%X%%g_scan_pattern%") do set "target_dir=%%~dpI"
 if not exist "!target_dir!" goto :EOF
 
-for /f "delims=" %%f in ('dir /a-d /b "!target_dir!" 2^>nul') do (
+for /f "delims=" %%f in ('dir /a-d /b "%X%%g_scan_pattern%" 2^>nul') do (
   set "cur_name=%%f"
   if not defined keep[!cur_name!] (
     echo !cur_name!
