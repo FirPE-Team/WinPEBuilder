@@ -30,7 +30,7 @@ if "!code_word:~0,2!"==":[" (
 )
 
 set bCode=0
-for /f "delims=" %%i in (!code_file!) do (
+for /f "usebackq delims=" %%i in ("!code_file!") do (
   set "line=%%i"
   if !bCode!==0 (
     if /i "!line!"=="!strStartCode!" set "bCode=1"
