@@ -9,7 +9,7 @@ if "%~2"=="" (
   set "code_file="
   set "code_word=%~1"
 ) else (
-  set "code_file=%~1"
+  set "code_file=%~f1"
   set "code_word=%2"
 )
 
