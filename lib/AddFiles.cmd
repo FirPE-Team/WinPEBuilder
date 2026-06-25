@@ -3,12 +3,12 @@ echo [MACRO]AddFiles %*
 if "x%ADDFILES_INITED%"=="x" (
   wimlib-imagex.exe dir "%APP_SRC%" %APP_SRC_INDEX% --path=\Windows\System32\%APP_PE_LANG%\ >"%APP_TMP_PATH%\AddFiles_SYSMUI.txt"
   wimlib-imagex.exe dir "%APP_SRC%" %APP_SRC_INDEX% --path=\Windows\SysWOW64\%APP_PE_LANG%\ >>"%APP_TMP_PATH%\AddFiles_SYSMUI.txt"
-  for /f "delims=" %%i in ('type "%APP_TMP_PATH%\AddFiles_SYSMUI.txt"') do set "MUI_LIST[%%i]=1"
+  for /f "usebackq delims=" %%i in ("%APP_TMP_PATH%\AddFiles_SYSMUI.txt") do set "MUI_LIST[%%i]=1"
   
   rem *.mun files present from 19H1
   if exist "%X%\Windows\SystemResources\shell32.dll.mun" (
     wimlib-imagex.exe dir "%APP_SRC%" %APP_SRC_INDEX% --path=\Windows\SystemResources\ >"%APP_TMP_PATH%\AddFiles_SYSRES.txt"
-    for /f "delims=" %%i in ('type "%APP_TMP_PATH%\AddFiles_SYSRES.txt"') do set "MUN_LIST[%%i]=1"
+    for /f "usebackq delims=" %%i in ("%APP_TMP_PATH%\AddFiles_SYSRES.txt") do set "MUN_LIST[%%i]=1"
   )
   set ADDFILES_INITED=1
 )

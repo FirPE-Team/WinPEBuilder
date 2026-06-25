@@ -12,8 +12,8 @@ set "APP_TMP_PATH=%cd%\tests\tmp"
 set "APP_PE_LANG=zh-CN"
 set "X=%~dp0tmp"
 set ADDFILES_INITED=1
-for /f "delims=" %%i in ('type "%APP_TMP_PATH%\AddFiles_SYSMUI.txt"') do set "MUI_LIST[%%i]=1"
-for /f "delims=" %%i in ('type "%APP_TMP_PATH%\AddFiles_SYSRES.txt"') do set "MUN_LIST[%%i]=1"
+for /f "usebackq delims=" %%i in ("%APP_TMP_PATH%\AddFiles_SYSMUI.txt") do set "MUI_LIST[%%i]=1"
+for /f "usebackq delims=" %%i in ("%APP_TMP_PATH%\AddFiles_SYSRES.txt") do set "MUN_LIST[%%i]=1"
 
 rem ============================================================================
 call AddFiles "mspaint.exe"
