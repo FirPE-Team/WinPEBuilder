@@ -152,6 +152,8 @@ for /d %%x in ("%cd%\Projects\*") do (
   if "!index!"=="%project%" (set APP_PROJECT=%%~nx)
 )
 
+call :SELECT_PRESET
+
 echo.
 echo 基础镜像
 echo ————————————————————————————————————————————————
@@ -223,6 +225,9 @@ set "PROJECT_PATH=%cd%\projects\%APP_PROJECT%"
 set "BUILD_WIM=%cd%\target\%APP_PROJECT%\boot.wim"
 set "ISO_DIR=%cd%\target\%APP_PROJECT%\_ISO_"
 
+call :RESOLVE_PRESET
+if errorlevel 1 goto :EOF
+
 set "V_APP=%APP_ROOT%\vendor"
 set "V=%V_APP%"
 
@@ -272,7 +277,7 @@ call RunHooks after-mount-reg.cmd
 
 rem 执行项目脚本
 call RunHooks before-project.cmd
-call ApplyProjectPatches "%PROJECT_PATH%"
+call ApplyProjectPatches "%PROJECT_PATH%" "%APP_PRESET_FILE%"
 call RunHooks after-project.cmd
 echo \033[93;46m [构建] 项目执行完成，正在清理...... | CmdColor.exe
 
@@ -341,7 +346,7 @@ if %min% GTR 0 (
 
 call RunHooks finished.cmd
 if "x%APP_EXEC_MODE%"=="x1" goto :EOF
-for %%v in (APP_SRC_FOLDER APP_SRC_WIM APP_SRC APP_SRC_INDEX APP_BASE_WIM APP_BASE_INDEX APP_BASE_PATH APP_PROJECT APP_OPT_PROJECT APP_OPT_MAKE_ISO APP_EXEC_MODE) do set "%%v="
+for %%v in (APP_SRC_FOLDER APP_SRC_WIM APP_SRC APP_SRC_INDEX APP_BASE_WIM APP_BASE_INDEX APP_BASE_PATH APP_PROJECT APP_OPT_PROJECT APP_OPT_PRESET APP_PRESET_FILE APP_OPT_MAKE_ISO APP_EXEC_MODE) do set "%%v="
 cmd /k
 goto :EOF
 
@@ -355,11 +360,13 @@ echo    --source-index INDEX
 echo    --base-wim BASE_WIM_FILE
 echo    --base-index INDEX
 echo    --project PROJECT
+echo    --preset PRESET
 echo    --make-iso
 echo.
 echo Examples:
 echo.
 echo    %~nx0 --source-folder I: --project Windows11PE
+echo    %~nx0 --source-folder I: --project Windows11PE --preset full
 echo    %~nx0 --source-folder I: --source-index 1 --project Windows11PE
 echo    %~nx0 --source-wim "D:\win10v1903\sources\install.wim" --source-index 4 --make-iso
 echo    %~nx0 --source-folder H: --source-index 1 --base-wim "D:\BOOTPE\boot.wim" --make-iso
@@ -394,9 +401,53 @@ if /i "x%1"=="x-h" (
 ) else if /i "x%1"=="x--project" (
   set APP_OPT_PROJECT=%2
   SHIFT
+) else if /i "x%1"=="x--preset" (
+  set "APP_OPT_PRESET=%~2"
+  SHIFT
 ) else if /i "x%1"=="x--make-iso" (
   set APP_OPT_MAKE_ISO=1
 )
 SHIFT
 goto :PARSE_OPTIONS
+goto :EOF
+
+:RESOLVE_PRESET
+set "APP_PRESET_FILE="
+if "x%APP_OPT_PRESET%"=="x" exit /b 0
+
+set "APP_PRESET_FILE=%PROJECT_PATH%\presets\%APP_OPT_PRESET%.txt"
+if exist "%APP_PRESET_FILE%" (
+  echo [Preset] %APP_OPT_PRESET%
+  exit /b 0
+)
+
+echo [Error] Preset not found: %APP_OPT_PRESET%
+echo [Error] Expected file: %APP_PRESET_FILE%
+exit /b 1
+
+:SELECT_PRESET
+set "APP_OPT_PRESET="
+set "APP_PRESET_COUNT=0"
+set "APP_PRESET_DIR=%cd%\Projects\%APP_PROJECT%\presets"
+if not exist "%APP_PRESET_DIR%\*.txt" goto :EOF
+
+echo.
+echo 可用预设：
+echo ————————————————————————————————————————————————
+for %%f in ("%APP_PRESET_DIR%\*.txt") do (
+  set /a APP_PRESET_COUNT+=1
+  set "APP_PRESET[!APP_PRESET_COUNT!]=%%~nf"
+  echo  !APP_PRESET_COUNT!     %%~nf
+)
+echo ————————————————————————————————————————————————
+
+:set_preset
+set "preset="
+set /p preset=请输入预设序号：
+if "!preset!"=="" set "preset=1"
+if not defined APP_PRESET[!preset!] (
+  echo 没有选择对应的预设
+  goto :set_preset
+)
+call set "APP_OPT_PRESET=%%APP_PRESET[!preset!]%%"
 goto :EOF

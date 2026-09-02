@@ -60,6 +60,28 @@ WinPEBuilder 中内置了许多环境变量，可直接在脚本中进行使用�
 3. `Project\项目名称\`下的各个目录中的`last.cmd`
 4. `Project\项目名称\last.cmd`
 
+## 预设
+
+预设是工程目录下可选的纯文本路径清单，位于 `Projects\<项目>\presets\<名称>.txt`。命令行可以通过 `--preset <名称>` 显式启用；交互模式会在选择项目后显示该项目已有的预设：
+
+```batch
+WinPEBuilder.cmd --source-folder I: --project WinPE --preset mypreset.txt
+```
+
+预设文件的每个非空行都是相对于工程根目录的一个具体补丁目录，例如：
+
+```text
+00_Simplify
+01_Configures\Build
+03_Components\TaskManager
+05_Network
+```
+
+- 路径清单按文件逐行读取和精确路径匹配，不会自动展开子目录，未列出的子目录脚本不会执行；
+- 路径清单中的注释行（以 `#` 开头）会被忽略过。
+- 预设文件中的路径顺序决定补丁的执行顺序。工程根目录的 `main.cmd` 和 `last.cmd` 始终执行；
+- 未提供 `--preset` 时执行全部项目脚本。清单中的不存在目录将会输出警告。
+
 ## Hooks
 
 WinPEBuilder 提供了 Hooks 机制，允许在构建过程的关键节点执行自定义脚本。Hooks 脚本应放置在项目目录的根目录下，与 `main.cmd` 同级。
