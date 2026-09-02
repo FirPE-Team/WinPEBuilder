@@ -341,6 +341,7 @@ if %min% GTR 0 (
 
 call RunHooks finished.cmd
 if "x%APP_EXEC_MODE%"=="x1" goto :EOF
+for %%v in (APP_SRC_FOLDER APP_SRC_WIM APP_SRC APP_SRC_INDEX APP_BASE_WIM APP_BASE_INDEX APP_BASE_PATH APP_PROJECT APP_OPT_PROJECT APP_OPT_MAKE_ISO APP_EXEC_MODE) do set "%%v="
 cmd /k
 goto :EOF
 
