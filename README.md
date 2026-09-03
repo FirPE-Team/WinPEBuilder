@@ -82,6 +82,18 @@ WinPEBuilder.cmd --source-folder I: --project WinPE --preset mypreset.txt
 - 预设文件中的路径顺序决定补丁的执行顺序。工程根目录的 `main.cmd` 和 `last.cmd` 始终执行；
 - 未提供 `--preset` 时执行全部项目脚本。清单中的不存在目录将会输出警告。
 
+项目脚本可调用 `CheckPatch` 查询某个路径是否被当前预设选中：
+
+```batch
+call CheckPatch "03_Components\TaskManager"
+if "%HasPatch%"=="true" (
+  rem 当前预设包含该补丁
+)
+```
+
+- 以错误级别 `1` 表示已选中、`0` 表示未选中
+- 未使用预设时，`CheckPatch` 将所有路径视为选中。
+
 ## Hooks
 
 WinPEBuilder 提供了 Hooks 机制，允许在构建过程的关键节点执行自定义脚本。Hooks 脚本应放置在项目目录的根目录下，与 `main.cmd` 同级。
